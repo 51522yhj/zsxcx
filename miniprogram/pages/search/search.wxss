@@ -6,7 +6,7 @@
 }
 
 .search-panel {
-  padding: 18rpx 0 8rpx;
+  padding: 18rpx 0 10rpx;
 }
 
 .search-box {
@@ -36,22 +36,40 @@
   border-radius: 38rpx;
   background: #ff2d2d;
   color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-size: 28rpx;
   font-weight: 700;
   line-height: 76rpx;
   text-align: center;
 }
 
-.category-strip,
-.tag-strip {
-  white-space: nowrap;
-  margin: 20rpx -24rpx 0;
-  padding-left: 24rpx;
-  box-sizing: border-box;
+.filter-row {
+  display: flex;
+  align-items: center;
+  margin-top: 18rpx;
 }
 
-.tag-strip {
-  margin-top: 14rpx;
+.filter-label {
+  width: 72rpx;
+  height: 44rpx;
+  margin-right: 10rpx;
+  border-radius: 22rpx;
+  background: #fff0f0;
+  color: #ff2d2d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 700;
+  flex: none;
+}
+
+.filter-strip {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .category-chip,
@@ -74,9 +92,14 @@
   white-space: nowrap;
 }
 
+.tag-chip {
+  border: 1rpx solid #eeeeee;
+}
+
 .category-chip.active,
 .tag-chip.active {
   background: #ff2d2d;
+  border-color: #ff2d2d;
   color: #ffffff;
   font-weight: 700;
 }

@@ -1,6 +1,7 @@
 <template>
   <div class="login-page">
     <div class="login-panel">
+      <div class="login-brand">小</div>
       <h1>小于印染</h1>
       <p>商品展示与公告配置后台</p>
       <el-form :model="form" @keyup.enter="login">
@@ -39,4 +40,3 @@ async function login() {
   }
 }
 </script>
-

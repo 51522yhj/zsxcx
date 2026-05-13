@@ -5,26 +5,32 @@
       <button bindtap="search">搜索</button>
     </view>
 
-    <scroll-view scroll-x class="category-strip">
-      <view class="category-chip {{!activeCategoryId ? 'active' : ''}}" data-id="" bindtap="selectCategory">全部</view>
-      <view
-        wx:for="{{categories}}"
-        wx:key="id"
-        class="category-chip {{activeCategoryId === item.id ? 'active' : ''}}"
-        data-id="{{item.id}}"
-        bindtap="selectCategory"
-      >{{item.name}}</view>
-    </scroll-view>
+    <view class="filter-row">
+      <view class="filter-label">分类</view>
+      <scroll-view scroll-x class="filter-strip">
+        <view class="category-chip {{!activeCategoryId ? 'active' : ''}}" data-id="" bindtap="selectCategory">全部</view>
+        <view
+          wx:for="{{categories}}"
+          wx:key="id"
+          class="category-chip {{activeCategoryId === item.id ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectCategory"
+        >{{item.name}}</view>
+      </scroll-view>
+    </view>
 
-    <scroll-view scroll-x class="tag-strip" wx:if="{{tags.length}}">
-      <view
-        wx:for="{{tags}}"
-        wx:key="id"
-        class="tag-chip {{activeTagId === item.id ? 'active' : ''}}"
-        data-id="{{item.id}}"
-        bindtap="selectTag"
-      >{{item.name}}</view>
-    </scroll-view>
+    <view class="filter-row" wx:if="{{tags.length}}">
+      <view class="filter-label">标签</view>
+      <scroll-view scroll-x class="filter-strip">
+        <view
+          wx:for="{{tags}}"
+          wx:key="id"
+          class="tag-chip {{activeTagId === item.id ? 'active' : ''}}"
+          data-id="{{item.id}}"
+          bindtap="selectTag"
+        >{{item.name}}</view>
+      </scroll-view>
+    </view>
   </view>
 
   <view class="result-head">

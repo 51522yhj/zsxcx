@@ -104,4 +104,3 @@ async function remove(row) {
 
 onMounted(load)
 </script>
-

@@ -63,4 +63,3 @@ function logout() {
   token.value = ''
 }
 </script>
-

@@ -40,4 +40,3 @@ async function save() {
 
 onMounted(load)
 </script>
-
