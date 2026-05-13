@@ -1,0 +1,19 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://your-cloudbase-mysql-host:3306/xiaoyu_yinran?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: "your-production-mysql-password"
+  sql:
+    init:
+      mode: never
+
+app:
+  jwt-secret: replace-with-a-long-production-secret
+  upload-root: /mnt/cos/uploads
+  public-file-base-url: https://your-cloudbase-bucket-domain/uploads
+  default-admin-username: admin
+  default-admin-password: change-this-before-production

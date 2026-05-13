@@ -1,0 +1,18 @@
+target/
+dist/
+node_modules/
+.idea/
+.vscode/
+*.log
+uploads/
+.env
+*.env
+*.env.*
+server/uploads/
+admin/.env.local
+miniprogram/project.private.config.json
+
+# Local/prod runtime config contains database passwords and JWT secrets.
+server/src/main/resources/application-local.yml
+server/src/main/resources/application-prod.yml
+docker-compose.local.yml

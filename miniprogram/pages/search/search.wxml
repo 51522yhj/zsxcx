@@ -1,0 +1,62 @@
+<view class="search-page">
+  <view class="search-panel">
+    <view class="search-box">
+      <input value="{{keyword}}" placeholder="搜索名称、标签、分类" bindinput="input" confirm-type="search" bindconfirm="search" />
+      <button bindtap="search">搜索</button>
+    </view>
+
+    <scroll-view scroll-x class="category-strip">
+      <view class="category-chip {{!activeCategoryId ? 'active' : ''}}" data-id="" bindtap="selectCategory">全部</view>
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="category-chip {{activeCategoryId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectCategory"
+      >{{item.name}}</view>
+    </scroll-view>
+
+    <scroll-view scroll-x class="tag-strip" wx:if="{{tags.length}}">
+      <view
+        wx:for="{{tags}}"
+        wx:key="id"
+        class="tag-chip {{activeTagId === item.id ? 'active' : ''}}"
+        data-id="{{item.id}}"
+        bindtap="selectTag"
+      >{{item.name}}</view>
+    </scroll-view>
+  </view>
+
+  <view class="result-head">
+    <text>商品列表</text>
+    <text wx:if="{{products.length}}">{{products.length}} 款</text>
+    <text wx:elif="{{searched}}">暂无结果</text>
+    <text wx:else>选择分类或输入关键词</text>
+  </view>
+
+  <view class="product-grid search-grid" wx:if="{{products.length}}">
+    <view class="product-card" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
+      <view class="image-wrap">
+        <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
+        <image
+          wx:if="{{!imageErrors[item.id]}}"
+          class="real-image"
+          data-id="{{item.id}}"
+          src="{{item.coverUrl || item.images[0].imageUrl}}"
+          mode="aspectFill"
+          lazy-load
+          binderror="imageError"
+        />
+      </view>
+      <view class="product-info">
+        <view class="product-name">{{item.name}}</view>
+        <view class="product-meta">{{item.summary || '价格面议'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{searched && !products.length}}">
+    <image src="/assets/ui/empty-box.png" mode="aspectFit" />
+    <view>没有找到相关商品</view>
+  </view>
+</view>

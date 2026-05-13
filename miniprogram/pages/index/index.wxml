@@ -1,0 +1,60 @@
+<view class="home">
+  <view class="notice" bindtap="openNotice" wx:if="{{noticeText}}">
+    <text class="speaker">!</text>
+    <text class="notice-brand">{{settings.siteName}}</text>
+    <view class="marquee">
+      <view class="marquee-text">{{noticeText}}   {{noticeText}}</view>
+    </view>
+  </view>
+
+  <view class="search" bindtap="goSearch">搜索</view>
+
+  <view wx:for="{{sections}}" wx:key="title" class="section">
+    <view class="section-head">
+      <view class="line"></view>
+      <text>{{item.title}}</text>
+      <view class="line"></view>
+      <view class="more" data-id="{{item.products[0].categoryId}}" bindtap="goCategory">更多 ></view>
+    </view>
+    <view class="product-grid">
+      <view class="product-card" wx:for="{{item.products}}" wx:for-item="product" wx:key="id" data-id="{{product.id}}" bindtap="goDetail">
+        <view class="image-wrap">
+          <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
+          <image
+            wx:if="{{!imageErrors[product.id]}}"
+            class="real-image"
+            data-id="{{product.id}}"
+            src="{{product.coverUrl || product.images[0].imageUrl}}"
+            mode="aspectFill"
+            lazy-load
+            binderror="imageError"
+          />
+        </view>
+        <view class="product-info">
+          <view class="product-name">{{product.name}}</view>
+          <view class="product-meta">{{product.summary || '价格面议'}}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty" wx:if="{{!loading && !products.length}}">
+    <image src="/assets/ui/empty-box.png" mode="aspectFit" />
+    <view>暂无商品</view>
+  </view>
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+
+  <view class="modal-mask" wx:if="{{showNotice}}" bindtap="closeNotice">
+    <view class="notice-card" catchtap="noop">
+      <view class="notice-head">
+        <view class="notice-dot">!</view>
+        <text>{{activeNotice.title || '公告'}}</text>
+      </view>
+      <scroll-view scroll-y class="notice-body">
+        <image wx:if="{{activeNotice.imageUrl}}" class="notice-img" src="{{activeNotice.imageUrl}}" mode="widthFix" />
+        <view class="notice-content">{{activeNotice.content}}</view>
+      </scroll-view>
+      <button class="notice-button" bindtap="closeNotice">我知道了</button>
+    </view>
+  </view>
+</view>

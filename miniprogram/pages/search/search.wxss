@@ -1,0 +1,161 @@
+.search-page {
+  min-height: 100vh;
+  padding: 20rpx 24rpx 34rpx;
+  background: #f7f7f7;
+  box-sizing: border-box;
+}
+
+.search-panel {
+  padding: 18rpx 0 8rpx;
+}
+
+.search-box {
+  height: 76rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.search-box input {
+  flex: 1;
+  min-width: 0;
+  height: 76rpx;
+  padding: 0 28rpx;
+  border-radius: 38rpx;
+  background: #ffffff;
+  color: #222222;
+  font-size: 28rpx;
+  box-sizing: border-box;
+}
+
+.search-box button {
+  width: 126rpx;
+  height: 76rpx;
+  margin: 0;
+  padding: 0;
+  border-radius: 38rpx;
+  background: #ff2d2d;
+  color: #ffffff;
+  font-size: 28rpx;
+  font-weight: 700;
+  line-height: 76rpx;
+  text-align: center;
+}
+
+.category-strip,
+.tag-strip {
+  white-space: nowrap;
+  margin: 20rpx -24rpx 0;
+  padding-left: 24rpx;
+  box-sizing: border-box;
+}
+
+.tag-strip {
+  margin-top: 14rpx;
+}
+
+.category-chip,
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 58rpx;
+  max-width: 190rpx;
+  padding: 0 24rpx;
+  margin-right: 14rpx;
+  border-radius: 30rpx;
+  background: #ffffff;
+  color: #555555;
+  font-size: 26rpx;
+  line-height: 58rpx;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-chip.active,
+.tag-chip.active {
+  background: #ff2d2d;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.result-head {
+  height: 78rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #222222;
+  font-size: 30rpx;
+  font-weight: 700;
+}
+
+.result-head text:last-child {
+  color: #888888;
+  font-size: 24rpx;
+  font-weight: 400;
+}
+
+.search-grid {
+  gap: 18rpx;
+}
+
+.search-grid .product-card {
+  width: calc((100% - 18rpx) / 2);
+  border-radius: 12rpx;
+}
+
+.image-wrap {
+  position: relative;
+  width: 100%;
+  height: 330rpx;
+  background: #f1f1f1;
+  overflow: hidden;
+}
+
+.image-wrap image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder {
+  z-index: 1;
+}
+
+.real-image {
+  z-index: 2;
+}
+
+.search-grid .product-info {
+  min-height: 138rpx;
+  padding: 18rpx 20rpx 20rpx;
+}
+
+.search-grid .product-name {
+  font-size: 30rpx;
+  line-height: 1.35;
+}
+
+.search-grid .product-meta {
+  margin-top: 18rpx;
+  color: #ff2d2d;
+  font-size: 32rpx;
+  font-weight: 700;
+}
+
+.empty {
+  padding-top: 130rpx;
+  color: #777777;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.empty image {
+  width: 220rpx;
+  height: 160rpx;
+  display: block;
+  margin: 0 auto 20rpx;
+}

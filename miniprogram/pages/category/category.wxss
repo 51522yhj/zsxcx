@@ -1,0 +1,159 @@
+.category-page {
+  height: 100vh;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.top-search {
+  padding: 18rpx 24rpx;
+  background: #f6f6f6;
+}
+
+.top-search input {
+  height: 72rpx;
+  border-radius: 36rpx;
+  border: 1rpx solid #eeeeee;
+  background: #ffffff;
+  color: #222222;
+  text-align: center;
+  font-size: 30rpx;
+  box-sizing: border-box;
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  border-top: 1rpx solid #eeeeee;
+}
+
+.side {
+  width: 204rpx;
+  height: 100%;
+  background: #f4f4f4;
+  flex: none;
+}
+
+.side-item {
+  min-height: 96rpx;
+  padding: 27rpx 12rpx;
+  color: #666666;
+  text-align: center;
+  box-sizing: border-box;
+  line-height: 40rpx;
+  font-size: 30rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.side-item.level-1 {
+  min-height: 78rpx;
+  padding: 20rpx 10rpx 20rpx 30rpx;
+  color: #777777;
+  font-size: 26rpx;
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.child-dot {
+  width: 10rpx;
+  height: 10rpx;
+  margin-right: 10rpx;
+  border-radius: 50%;
+  background: #cccccc;
+  flex: none;
+}
+
+.side-item.active {
+  background: #ffffff;
+  color: #ff2d2d;
+  font-weight: 700;
+}
+
+.side-item.active .child-dot {
+  background: #ff2d2d;
+}
+
+.content {
+  flex: 1;
+  height: 100%;
+  background: #ffffff;
+}
+
+.list {
+  padding-left: 24rpx;
+}
+
+.row {
+  min-height: 174rpx;
+  padding: 18rpx 24rpx 18rpx 0;
+  display: flex;
+  border-bottom: 1rpx solid #eeeeee;
+  box-sizing: border-box;
+}
+
+.row-img {
+  position: relative;
+  width: 150rpx;
+  height: 150rpx;
+  flex: none;
+  border-radius: 6rpx;
+  overflow: hidden;
+  background: #f1f1f1;
+}
+
+.row-img image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.placeholder {
+  z-index: 1;
+}
+
+.real-image {
+  z-index: 2;
+}
+
+.row-info {
+  flex: 1;
+  min-width: 0;
+  padding-left: 24rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.row-name {
+  font-size: 34rpx;
+  color: #333333;
+  line-height: 1.35;
+  word-break: break-all;
+}
+
+.row-summary {
+  margin-top: 34rpx;
+  font-size: 34rpx;
+  color: #ff2d2d;
+  line-height: 1.25;
+}
+
+.empty {
+  padding-top: 180rpx;
+  color: #777777;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.empty image {
+  width: 220rpx;
+  height: 160rpx;
+  display: block;
+  margin: 0 auto 20rpx;
+}

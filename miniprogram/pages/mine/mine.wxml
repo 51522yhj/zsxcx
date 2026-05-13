@@ -1,0 +1,29 @@
+<view class="mine-page">
+  <view class="brand">
+    <view class="brand-mark">小</view>
+    <view class="brand-copy">
+      <view class="name">{{settings.siteName || '小于印染'}}</view>
+      <view class="sub">服装、裤子、面料展示与咨询</view>
+    </view>
+  </view>
+
+  <view class="contact-panel">
+    <view class="row" bindtap="copyPhone">
+      <view>
+        <view class="label">联系电话</view>
+        <view class="value">{{settings.contactPhone || '未配置'}}</view>
+      </view>
+      <view class="copy">复制</view>
+    </view>
+    <view class="row" bindtap="copyWechat">
+      <view>
+        <view class="label">微信咨询</view>
+        <view class="value">{{settings.contactWechat || '未配置'}}</view>
+      </view>
+      <view class="copy">复制</view>
+    </view>
+    <button wx:if="{{settings.customerServiceEnabled}}" class="service" open-type="contact">
+      {{settings.customerServiceText || '咨询客服'}}
+    </button>
+  </view>
+</view>

@@ -1,0 +1,21 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/xiaoyu_yinran?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true&createDatabaseIfNotExist=true
+    username: root
+    password: "your-local-mysql-password"
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/schema.sql
+      continue-on-error: true
+
+app:
+  jwt-secret: replace-with-a-long-local-secret
+  upload-root: uploads
+  public-file-base-url: http://127.0.0.1:8080/uploads
+  default-admin-username: admin
+  default-admin-password: admin123

@@ -1,0 +1,30 @@
+<view class="detail" wx:if="{{product}}">
+  <swiper class="gallery" indicator-dots circular bindchange="swiperChange">
+    <swiper-item wx:for="{{displayImages}}" wx:key="imageUrl">
+      <image src="{{item.imageUrl}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
+  <view class="main">
+    <view class="brand-tag">{{settings.siteName || '小于印染'}}</view>
+    <view class="code">{{product.name}}</view>
+    <view class="price">{{product.summary || '价格面议'}}</view>
+    <view class="muted">暂无评价</view>
+  </view>
+
+  <view class="graphic-title">
+    <view></view>
+    <text>图文详情</text>
+    <view></view>
+  </view>
+
+  <view class="description">{{product.description || '暂无详细说明，可点击客服咨询。'}}</view>
+  <image wx:for="{{displayImages}}" wx:key="imageUrl" class="detail-img" src="{{item.imageUrl}}" mode="widthFix" />
+
+  <view class="action-bar safe-bottom">
+    <button class="bar-item" bindtap="goHome">首页</button>
+    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{product.coverUrl || displayImages[0].imageUrl}}">
+      客服
+    </button>
+  </view>
+</view>
