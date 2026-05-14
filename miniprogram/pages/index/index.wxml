@@ -23,10 +23,10 @@
         <view class="image-wrap">
           <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
           <image
-            wx:if="{{!imageErrors[product.id]}}"
             class="real-image"
-            data-id="{{product.id}}"
-            src="{{product.coverUrl || product.images[0].imageUrl}}"
+            wx:if="{{product.displayImageUrl}}"
+            data-src="{{product.rawImageUrl}}"
+            src="{{product.displayImageUrl}}"
             mode="aspectFill"
             lazy-load
             binderror="imageError"

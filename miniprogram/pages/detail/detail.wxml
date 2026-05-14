@@ -23,7 +23,7 @@
 
   <view class="action-bar safe-bottom">
     <button class="bar-item" bindtap="goHome">首页</button>
-    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{product.coverUrl || displayImages[0].imageUrl}}">
+    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{displayImages[0].rawImageUrl || product.coverUrl}}">
       客服
     </button>
   </view>

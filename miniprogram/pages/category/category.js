@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { hydrateProducts } = require('../../utils/image-cache')
 
 Page({
   data: {
@@ -8,8 +9,7 @@ Page({
     expandedParentId: null,
     activeCategoryId: null,
     products: [],
-    keyword: '',
-    imageErrors: {}
+    keyword: ''
   },
 
   async onShow() {
@@ -78,14 +78,14 @@ Page({
   },
 
   async loadProducts() {
-    const params = {
-      page: 1,
-      size: 80,
-      keyword: this.data.keyword
-    }
+    const params = { page: 1, size: 80, keyword: this.data.keyword }
     if (this.data.activeCategoryId) params.categoryId = this.data.activeCategoryId
     const result = await api.getProducts(params)
-    this.setData({ products: result.records || [] })
+    this.setData({ products: await this.normalizeProducts(result.records || []) })
+  },
+
+  async normalizeProducts(products) {
+    return hydrateProducts(products)
   },
 
   goDetail(e) {
@@ -93,7 +93,6 @@ Page({
   },
 
   imageError(e) {
-    const id = e.currentTarget.dataset.id
-    if (id) this.setData({ [`imageErrors.${id}`]: true })
+    console.warn('image load failed', e.currentTarget.dataset.src)
   }
 })

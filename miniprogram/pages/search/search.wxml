@@ -45,10 +45,10 @@
       <view class="image-wrap">
         <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
         <image
-          wx:if="{{!imageErrors[item.id]}}"
           class="real-image"
-          data-id="{{item.id}}"
-          src="{{item.coverUrl || item.images[0].imageUrl}}"
+          wx:if="{{item.displayImageUrl}}"
+          data-src="{{item.rawImageUrl}}"
+          src="{{item.displayImageUrl}}"
           mode="aspectFill"
           lazy-load
           binderror="imageError"

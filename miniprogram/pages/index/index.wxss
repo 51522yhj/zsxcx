@@ -110,7 +110,9 @@
   height: 96rpx;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: #333333;
+  position: relative;
 }
 
 .section-head .line {
@@ -127,7 +129,10 @@
 }
 
 .section-head .more {
-  margin-left: auto;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   color: #999999;
   font-size: 26rpx;
   white-space: nowrap;

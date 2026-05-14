@@ -8,11 +8,11 @@ uploads/
 .env
 *.env
 *.env.*
+!server/cloud-env.example.env
 server/uploads/
 admin/.env.local
 miniprogram/project.private.config.json
 
-# Local/prod runtime config contains database passwords and JWT secrets.
+# Local runtime config contains database passwords and JWT secrets.
 server/src/main/resources/application-local.yml
-server/src/main/resources/application-prod.yml
 docker-compose.local.yml

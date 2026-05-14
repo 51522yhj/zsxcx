@@ -186,7 +186,6 @@ public class ProductService {
     private ProductVO toVO(Product product) {
         ProductVO vo = new ProductVO();
         BeanUtils.copyProperties(product, vo);
-        vo.setCoverUrl(resolveImageUrl(vo.getCoverUrl()));
         if (product.getCategoryId() != null) {
             Category category = categoryMapper.selectById(product.getCategoryId());
             if (category != null) {
@@ -197,8 +196,11 @@ public class ProductService {
                 .eq(ProductImage::getProductId, product.getId())
                 .orderByAsc(ProductImage::getSortOrder)
                 .orderByAsc(ProductImage::getId));
-        images.forEach(image -> image.setImageUrl(resolveImageUrl(image.getImageUrl())));
+        images.forEach(image -> image.setImageUrl(resolveImageUrl(StringUtils.hasText(image.getObjectKey()) ? image.getObjectKey() : image.getImageUrl())));
         vo.setImages(images);
+        ProductImage cover = images.stream().filter(image -> Boolean.TRUE.equals(image.getIsCover())).findFirst()
+                .orElse(images.isEmpty() ? null : images.get(0));
+        vo.setCoverUrl(cover == null ? resolveImageUrl(vo.getCoverUrl()) : cover.getImageUrl());
         List<ProductTag> productTags = productTagMapper.selectList(new LambdaQueryWrapper<ProductTag>()
                 .eq(ProductTag::getProductId, product.getId()));
         if (!productTags.isEmpty()) {

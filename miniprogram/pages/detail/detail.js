@@ -1,4 +1,5 @@
 const api = require('../../utils/api')
+const { hydrateImages } = require('../../utils/image-cache')
 
 Page({
   data: {
@@ -15,7 +16,8 @@ Page({
     wx.showLoading({ title: '加载中' })
     try {
       const [settings, product] = await Promise.all([api.getSettings(), api.getProduct(id)])
-      const displayImages = product.images && product.images.length ? product.images : [{ imageUrl: product.coverUrl }]
+      const rawImages = product.images && product.images.length ? product.images : [{ imageUrl: product.coverUrl }]
+      const displayImages = await hydrateImages(rawImages)
       this.setData({ settings, product, displayImages })
       wx.setNavigationBarTitle({ title: product.name })
     } finally {
