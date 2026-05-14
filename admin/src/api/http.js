@@ -36,4 +36,3 @@ export function uploadImage(file) {
     headers: { 'Content-Type': 'multipart/form-data' }
   })
 }
-
