@@ -11,6 +11,7 @@ import com.xiaoyu.yinran.mapper.CategoryMapper;
 import com.xiaoyu.yinran.mapper.TagMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -23,9 +24,12 @@ public class DataInitializer implements CommandLineRunner {
     private final TagMapper tagMapper;
     private final AnnouncementMapper announcementMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void run(String... args) {
+        ensureSiteSettingsColumns();
+
         if (adminMapper.selectCount(null) == 0) {
             Admin admin = new Admin();
             admin.setUsername(appProperties.getDefaultAdminUsername());
@@ -53,6 +57,14 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
+    private void ensureSiteSettingsColumns() {
+        try {
+            jdbcTemplate.execute("ALTER TABLE site_settings ADD COLUMN logo_url VARCHAR(500) NULL AFTER contact_wechat");
+        } catch (Exception ignored) {
+            // The column already exists in upgraded databases.
+        }
+    }
+
     private void seedCategory(String name, int sort) {
         Long count = categoryMapper.selectCount(new LambdaQueryWrapper<Category>().eq(Category::getName, name));
         if (count == 0) {
@@ -75,4 +87,3 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 }
-

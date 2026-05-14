@@ -213,11 +213,17 @@ public class ProductService {
     }
 
     private String resolveImageUrl(String url) {
-        if (!StringUtils.hasText(url) || url.startsWith("http://") || url.startsWith("https://")) {
+        if (!StringUtils.hasText(url)) {
             return url;
         }
         String base = appProperties.getPublicFileBaseUrl();
         if (!StringUtils.hasText(base)) {
+            return url;
+        }
+        int uploadsIndex = url.indexOf("/uploads/");
+        if (uploadsIndex >= 0) {
+            url = url.substring(uploadsIndex + "/uploads/".length());
+        } else if (url.startsWith("http://") || url.startsWith("https://")) {
             return url;
         }
         if (url.startsWith("/uploads/")) {

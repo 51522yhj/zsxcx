@@ -14,6 +14,7 @@ public class SiteSettings {
     private String siteName;
     private String contactPhone;
     private String contactWechat;
+    private String logoUrl;
     private Boolean customerServiceEnabled;
     private String customerServiceText;
     private String homeSectionTitle;

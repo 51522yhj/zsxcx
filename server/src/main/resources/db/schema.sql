@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   site_name VARCHAR(80) NOT NULL DEFAULT '小于印染',
   contact_phone VARCHAR(40) NULL,
   contact_wechat VARCHAR(80) NULL,
+  logo_url VARCHAR(500) NULL,
   customer_service_enabled TINYINT(1) NOT NULL DEFAULT 1,
   customer_service_text VARCHAR(40) NOT NULL DEFAULT '咨询客服',
   home_section_title VARCHAR(80) NOT NULL DEFAULT '精选面料',
@@ -99,4 +100,3 @@ CREATE TABLE IF NOT EXISTS site_settings (
 INSERT INTO site_settings (id, site_name, customer_service_enabled, customer_service_text, home_section_title)
 VALUES (1, '小于印染', 1, '咨询客服', '精选面料')
 ON DUPLICATE KEY UPDATE id = id;
-
