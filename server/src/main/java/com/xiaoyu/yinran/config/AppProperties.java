@@ -12,7 +12,10 @@ public class AppProperties {
     private long jwtExpireHours;
     private String uploadRoot;
     private String publicFileBaseUrl;
+    private String storageMode = "local";
+    private String cosBucket;
+    private String cosRegion;
+    private String cosKeyPrefix = "uploads";
     private String defaultAdminUsername;
     private String defaultAdminPassword;
 }
-

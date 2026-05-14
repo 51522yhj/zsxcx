@@ -14,6 +14,10 @@ spring:
 app:
   jwt-secret: ${JWT_SECRET:}
   upload-root: ${UPLOAD_ROOT:/mnt/cos/uploads}
+  storage-mode: ${STORAGE_MODE:cos}
+  cos-bucket: ${COS_BUCKET:7072-prod-5g2o11ud660eff91-1333102418}
+  cos-region: ${COS_REGION:ap-shanghai}
+  cos-key-prefix: ${COS_KEY_PREFIX:uploads}
   public-file-base-url: ${PUBLIC_FILE_BASE_URL:https://7072-prod-5g2o11ud660eff91-1333102418.tcb.qcloud.la/uploads}
   default-admin-username: ${DEFAULT_ADMIN_USERNAME:admin}
   default-admin-password: ${DEFAULT_ADMIN_PASSWORD:admin123}

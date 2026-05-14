@@ -16,6 +16,7 @@ spring:
 app:
   jwt-secret: replace-with-a-long-local-secret
   upload-root: uploads
+  storage-mode: local
   public-file-base-url: http://127.0.0.1:8080/uploads
   default-admin-username: admin
   default-admin-password: admin123
