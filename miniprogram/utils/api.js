@@ -1,5 +1,30 @@
 const config = require('./config')
 
+const VISITOR_KEY = 'xy_visitor_id'
+
+function visitorId() {
+  let id = wx.getStorageSync(VISITOR_KEY)
+  if (!id) {
+    id = `${Date.now()}${Math.random().toString(16).slice(2)}`
+    wx.setStorageSync(VISITOR_KEY, id)
+  }
+  return id
+}
+
+function currentSource() {
+  const pages = getCurrentPages()
+  const page = pages && pages.length ? pages[pages.length - 1] : null
+  return page?.route || 'app'
+}
+
+function trackingHeaders() {
+  return {
+    'X-Visitor-Id': visitorId(),
+    'X-Client-Source': currentSource(),
+    'X-Client-Platform': 'miniprogram'
+  }
+}
+
 function unwrap(res) {
   const body = res.data || {}
   if (body.success === false) {
@@ -14,11 +39,12 @@ function request(path, data = {}, method = 'GET') {
   if (config.mode === 'local') {
     return new Promise((resolve, reject) => {
       wx.request({
-        url: `${config.localBaseUrl}${path}`,
+        url: `${baseUrl()}${path}`,
         method,
         data,
         header: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          ...trackingHeaders()
         },
         success: (res) => {
           try {
@@ -44,9 +70,16 @@ function request(path, data = {}, method = 'GET') {
     data,
     header: {
       'X-WX-SERVICE': config.service,
-      'content-type': 'application/json'
+      'content-type': 'application/json',
+      ...trackingHeaders()
     }
   }).then(unwrap)
+}
+
+function baseUrl() {
+  const url = String(config.localBaseUrl || '').trim()
+  if (!url) return ''
+  return /^https?:\/\//i.test(url) ? url.replace(/\/$/, '') : `http://${url.replace(/\/$/, '')}`
 }
 
 module.exports = {
@@ -55,6 +88,8 @@ module.exports = {
   getCategories: () => request('/api/public/categories/tree'),
   getTags: () => request('/api/public/tags'),
   getProducts: (params) => request('/api/public/products', params),
-  getProduct: (id) => request(`/api/public/products/${id}`)
+  getProduct: (id) => request(`/api/public/products/${id}`),
+  bindOpenid: (code) => request('/api/public/subscription/openid', { code }, 'POST'),
+  updateNewProductSubscription: (openid, enabled) => request('/api/public/subscription/new-product', { openid, enabled }, 'POST'),
+  getSubscriptionStatus: (openid) => request('/api/public/subscription/status', { openid })
 }
-

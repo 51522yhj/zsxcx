@@ -16,7 +16,8 @@ public class ProductRequest {
     private String coverUrl;
     private String status = "DRAFT";
     private Integer sortOrder = 0;
+    private Boolean carouselAutoplayEnabled = true;
+    private Integer carouselIntervalSeconds = 3;
     private List<Long> tagIds = new ArrayList<>();
     private List<ImageRequest> images = new ArrayList<>();
 }
-

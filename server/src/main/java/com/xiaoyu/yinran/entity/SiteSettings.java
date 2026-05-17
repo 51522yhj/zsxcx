@@ -18,5 +18,9 @@ public class SiteSettings {
     private Boolean customerServiceEnabled;
     private String customerServiceText;
     private String homeSectionTitle;
+    private Boolean newProductNoticeEnabled;
+    private String newProductTemplateId;
+    private String newProductNoticeTitle;
+    private String newProductNoticeRemark;
     private LocalDateTime updatedAt;
 }

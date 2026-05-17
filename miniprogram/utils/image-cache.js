@@ -1,4 +1,5 @@
 const memory = {}
+const VIDEO_PLACEHOLDER = '/assets/ui/image-placeholder.png'
 
 function hash(input) {
   let value = 5381
@@ -65,7 +66,12 @@ function cacheImage(url) {
 }
 
 function getProductImageUrl(product) {
-  return product.coverUrl || (product.images && product.images[0] ? product.images[0].imageUrl : '')
+  if (product.coverUrl) return product.coverUrl
+  const firstImage = (product.images || []).find((item) => item.mediaType !== 'VIDEO')
+  const firstMedia = product.images && product.images[0]
+  if (firstImage) return firstImage.imageUrl
+  if (firstMedia && firstMedia.mediaType === 'VIDEO') return firstMedia.posterUrl || VIDEO_PLACEHOLDER
+  return firstMedia ? firstMedia.imageUrl : ''
 }
 
 async function hydrateProducts(products) {
@@ -84,8 +90,30 @@ async function hydrateImages(images) {
   }))
 }
 
+async function hydrateMedia(mediaList) {
+  return Promise.all((mediaList || []).map(async (media, index) => {
+    const mediaType = media.mediaType === 'VIDEO' ? 'VIDEO' : 'IMAGE'
+    if (mediaType === 'VIDEO') {
+      const rawPosterUrl = media.posterUrl || ''
+      const posterUrl = rawPosterUrl ? await cacheImage(rawPosterUrl) : VIDEO_PLACEHOLDER
+      return {
+        ...media,
+        mediaType,
+        rawImageUrl: media.imageUrl || '',
+        rawPosterUrl: rawPosterUrl || VIDEO_PLACEHOLDER,
+        posterUrl,
+        videoId: `media-video-${index}`
+      }
+    }
+    const rawImageUrl = media.imageUrl || ''
+    const displayImageUrl = await cacheImage(rawImageUrl)
+    return { ...media, mediaType, rawImageUrl, imageUrl: displayImageUrl }
+  }))
+}
+
 module.exports = {
   cacheImage,
   hydrateProducts,
-  hydrateImages
+  hydrateImages,
+  hydrateMedia
 }

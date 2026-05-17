@@ -21,6 +21,8 @@ public class Product {
     private String contactWechat;
     private String status;
     private Integer sortOrder;
+    private Boolean carouselAutoplayEnabled;
+    private Integer carouselIntervalSeconds;
     private String searchText;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

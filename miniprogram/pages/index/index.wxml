@@ -22,6 +22,7 @@
       <view class="product-card" wx:for="{{item.products}}" wx:for-item="product" wx:key="id" data-id="{{product.id}}" bindtap="goDetail">
         <view class="image-wrap">
           <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
+          <view class="no-image-text" wx:if="{{!product.displayImageUrl}}">暂无图片</view>
           <image
             class="real-image"
             wx:if="{{product.displayImageUrl}}"
@@ -34,7 +35,7 @@
         </view>
         <view class="product-info">
           <view class="product-name">{{product.name}}</view>
-          <view class="product-meta">{{product.summary || '价格面议'}}</view>
+          <view class="product-meta" wx:if="{{product.summary}}">{{product.summary}}</view>
         </view>
       </view>
     </view>
@@ -59,6 +60,17 @@
         <view class="notice-content">{{activeNotice.content}}</view>
       </scroll-view>
       <button class="notice-button" bindtap="closeNotice">我知道了</button>
+    </view>
+  </view>
+  <view class="subscribe-mask"  wx:if="{{showSubscribePrompt}}" >
+    <view class="subscribe-card">
+      <view class="subscribe-badge">新</view>
+      <view class="subscribe-title">开启新品上架提醒</view>
+      <view class="subscribe-desc">开启后，新品发布时会通过微信订阅消息提醒你；如微信要求重新授权，可在我的页面再次开启。</view>
+      <view class="subscribe-actions">
+        <button class="subscribe-cancel" bindtap="skipNewProductNotice">暂不开启</button>
+        <button class="subscribe-confirm" bindtap="enableNewProductNotice">开启提醒</button>
+      </view>
     </view>
   </view>
 </view>

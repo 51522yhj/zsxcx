@@ -19,7 +19,9 @@
         </el-table-column>
         <el-table-column prop="sortOrder" label="排序" width="90" />
         <el-table-column label="启用" width="90">
-          <template #default="{ row }"><el-tag :type="row.enabled ? 'success' : 'info'">{{ row.enabled ? '启用' : '停用' }}</el-tag></template>
+          <template #default="{ row }">
+            <el-tag :type="row.enabled ? 'success' : 'info'">{{ row.enabled ? '启用' : '停用' }}</el-tag>
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
           <template #default="{ row }">
@@ -32,16 +34,35 @@
 
     <el-dialog v-model="dialog" :title="form.id ? '编辑公告' : '新增公告'" width="640px">
       <el-form label-width="96px">
-        <el-form-item label="滚动内容"><el-input v-model="form.tickerText" /></el-form-item>
-        <el-form-item label="弹窗标题"><el-input v-model="form.title" /></el-form-item>
-        <el-form-item label="正文"><el-input v-model="form.content" type="textarea" :rows="5" /></el-form-item>
+        <el-form-item label="滚动内容">
+          <el-input v-model="form.tickerText" />
+        </el-form-item>
+        <el-form-item label="弹窗标题">
+          <el-input v-model="form.title" />
+        </el-form-item>
+        <el-form-item label="正文">
+          <el-input v-model="form.content" type="textarea" :rows="5" />
+        </el-form-item>
         <el-form-item label="图片">
-          <el-upload :http-request="handleImageUpload" list-type="picture-card" :file-list="imageList" :limit="1" :on-remove="removeImage">
+          <el-upload
+            v-loading="uploadingImage"
+            element-loading-text="Uploading..."
+            :http-request="handleImageUpload"
+            list-type="picture-card"
+            :file-list="imageList"
+            :limit="1"
+            :on-remove="removeImage"
+            :disabled="uploadingImage"
+          >
             <el-icon><Plus /></el-icon>
           </el-upload>
         </el-form-item>
-        <el-form-item label="排序"><el-input-number v-model="form.sortOrder" :min="0" /></el-form-item>
-        <el-form-item label="启用"><el-switch v-model="form.enabled" /></el-form-item>
+        <el-form-item label="排序">
+          <el-input-number v-model="form.sortOrder" :min="0" />
+        </el-form-item>
+        <el-form-item label="启用">
+          <el-switch v-model="form.enabled" />
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialog = false">取消</el-button>
@@ -60,6 +81,7 @@ import { http, uploadImage } from '../api/http'
 const rows = ref([])
 const dialog = ref(false)
 const imageList = ref([])
+const uploadingImage = ref(false)
 const form = reactive({ id: null, title: '公告', tickerText: '', content: '', imageUrl: '', enabled: true, sortOrder: 0 })
 
 async function load() {
@@ -73,10 +95,17 @@ function open(row) {
 }
 
 async function handleImageUpload(option) {
-  const data = await uploadImage(option.file)
-  form.imageUrl = data.url
-  imageList.value = [{ name: option.file.name, url: data.url }]
-  option.onSuccess(data)
+  uploadingImage.value = true
+  try {
+    const data = await uploadImage(option.file)
+    form.imageUrl = data.url
+    imageList.value = [{ name: option.file.name, url: data.url }]
+    option.onSuccess(data)
+  } catch (error) {
+    option.onError?.(error)
+  } finally {
+    uploadingImage.value = false
+  }
 }
 
 function removeImage() {
@@ -99,3 +128,13 @@ async function remove(row) {
 
 onMounted(load)
 </script>
+
+<style scoped>
+.cover {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #f2f3f5;
+}
+</style>

@@ -16,6 +16,14 @@ public class AppProperties {
     private String cosBucket;
     private String cosRegion;
     private String cosKeyPrefix = "uploads";
+    private String cosSecretId;
+    private String cosSecretKey;
+    private long cosSignedUrlSeconds = 86400;
+    private String wechatAppId;
+    private String wechatAppSecret;
+    private String wechatMiniprogramState = "developer";
+    private String newProductTemplateId;
     private String defaultAdminUsername;
     private String defaultAdminPassword;
+    private int visitEventRetentionDays = 180;
 }

@@ -1,14 +1,26 @@
 <view class="detail" wx:if="{{product}}">
-  <swiper class="gallery" indicator-dots circular bindchange="swiperChange">
-    <swiper-item wx:for="{{displayImages}}" wx:key="imageUrl">
-      <image src="{{item.imageUrl}}" mode="aspectFill" />
+  <swiper class="gallery" indicator-dots circular autoplay="{{carouselAutoplay}}" interval="{{carouselInterval}}" bindchange="swiperChange">
+    <swiper-item wx:for="{{displayMedia}}" wx:key="imageUrl">
+      <video
+        wx:if="{{item.mediaType === 'VIDEO'}}"
+        id="{{item.videoId}}"
+        class="gallery-media gallery-video"
+        src="{{item.rawImageUrl}}"
+        poster="{{item.posterUrl}}"
+        autoplay="{{true}}"
+        muted="{{true}}"
+        controls="{{true}}"
+        show-progress="{{true}}"
+        object-fit="cover"
+      />
+      <image wx:else class="gallery-media" src="{{item.imageUrl}}" mode="aspectFill" />
     </swiper-item>
   </swiper>
 
   <view class="main">
-    <view class="brand-tag">{{settings.siteName || '小于印染'}}</view>
+    <view class="brand-tag">{{settings.siteName || '源创潮牌'}}</view>
     <view class="code">{{product.name}}</view>
-    <view class="price">{{product.summary || '价格面议'}}</view>
+    <view class="price" wx:if="{{product.summary}}">{{product.summary}}</view>
     <view class="muted">暂无评价</view>
   </view>
 
@@ -19,11 +31,11 @@
   </view>
 
   <view class="description">{{product.description || '暂无详细说明，可点击客服咨询。'}}</view>
-  <image wx:for="{{displayImages}}" wx:key="imageUrl" class="detail-img" src="{{item.imageUrl}}" mode="widthFix" />
+  <image wx:for="{{detailImages}}" wx:key="imageUrl" class="detail-img" src="{{item.imageUrl}}" mode="widthFix" />
 
   <view class="action-bar safe-bottom">
     <button class="bar-item" bindtap="goHome">首页</button>
-    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{displayImages[0].rawImageUrl || product.coverUrl}}">
+    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{shareImageUrl}}">
       客服
     </button>
   </view>

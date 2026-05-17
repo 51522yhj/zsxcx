@@ -1,9 +1,9 @@
 package com.xiaoyu.yinran.service;
 
+import com.xiaoyu.yinran.config.AppProperties;
 import com.xiaoyu.yinran.dto.SiteSettingsRequest;
 import com.xiaoyu.yinran.entity.SiteSettings;
 import com.xiaoyu.yinran.mapper.SiteSettingsMapper;
-import com.xiaoyu.yinran.config.AppProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 @RequiredArgsConstructor
 public class SiteService {
     private final SiteSettingsMapper siteSettingsMapper;
+    private final UploadService uploadService;
     private final AppProperties appProperties;
 
     public SiteSettings getSettings() {
@@ -24,9 +25,13 @@ public class SiteService {
             settings.setCustomerServiceEnabled(true);
             settings.setCustomerServiceText("咨询客服");
             settings.setHomeSectionTitle("精选面料");
+            settings.setNewProductNoticeEnabled(false);
+            settings.setNewProductNoticeTitle("新品上架");
+            settings.setNewProductNoticeRemark("点击查看新品详情");
             siteSettingsMapper.insert(settings);
         }
-        settings.setLogoUrl(resolveUploadUrl(settings.getLogoUrl()));
+        fillDefaults(settings);
+        settings.setLogoUrl(uploadService.resolveFileUrl(settings.getLogoUrl()));
         return settings;
     }
 
@@ -34,33 +39,40 @@ public class SiteService {
         SiteSettings settings = getSettings();
         BeanUtils.copyProperties(request, settings);
         settings.setId(1L);
+        fillDefaults(settings);
         siteSettingsMapper.updateById(settings);
         return getSettings();
     }
 
-    private String resolveUploadUrl(String url) {
-        if (!StringUtils.hasText(url)) {
-            return url;
+    private void fillDefaults(SiteSettings settings) {
+        boolean filledTemplateFromConfig = false;
+        if (!StringUtils.hasText(settings.getNewProductTemplateId())
+                && StringUtils.hasText(appProperties.getNewProductTemplateId())) {
+            settings.setNewProductTemplateId(appProperties.getNewProductTemplateId());
+            filledTemplateFromConfig = true;
         }
-        String base = appProperties.getPublicFileBaseUrl();
-        if (!StringUtils.hasText(base)) {
-            return url;
+        if (!StringUtils.hasText(settings.getSiteName())) {
+            settings.setSiteName("小于印染");
         }
-        int uploadsIndex = url.indexOf("/uploads/");
-        if (uploadsIndex >= 0) {
-            url = url.substring(uploadsIndex + "/uploads/".length());
-        } else if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url;
-        } else if (url.startsWith("/uploads/")) {
-            url = url.substring("/uploads/".length());
-        } else if (url.startsWith("uploads/")) {
-            url = url.substring("uploads/".length());
-        } else if (url.startsWith("/")) {
-            url = url.substring(1);
+        if (settings.getCustomerServiceEnabled() == null) {
+            settings.setCustomerServiceEnabled(true);
         }
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
+        if (!StringUtils.hasText(settings.getCustomerServiceText())) {
+            settings.setCustomerServiceText("咨询客服");
         }
-        return base + "/" + url;
+        if (!StringUtils.hasText(settings.getHomeSectionTitle())) {
+            settings.setHomeSectionTitle("精选面料");
+        }
+        if (settings.getNewProductNoticeEnabled() == null
+                || (filledTemplateFromConfig && !Boolean.TRUE.equals(settings.getNewProductNoticeEnabled()))) {
+            settings.setNewProductNoticeEnabled(StringUtils.hasText(settings.getNewProductTemplateId()));
+        }
+        if (!StringUtils.hasText(settings.getNewProductNoticeTitle())) {
+            settings.setNewProductNoticeTitle("新品上架");
+        }
+        if (!StringUtils.hasText(settings.getNewProductNoticeRemark())) {
+            settings.setNewProductNoticeRemark("点击查看新品详情");
+        }
     }
+
 }

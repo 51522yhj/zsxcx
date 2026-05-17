@@ -8,8 +8,8 @@ spring:
     active: local
   servlet:
     multipart:
-      max-file-size: 12MB
-      max-request-size: 60MB
+      max-file-size: 100MB
+      max-request-size: 100MB
   jackson:
     time-zone: Asia/Shanghai
     date-format: yyyy-MM-dd HH:mm:ss
@@ -29,6 +29,7 @@ management:
 
 app:
   jwt-expire-hours: 168
+  visit-event-retention-days: 180
 
 springdoc:
   swagger-ui:

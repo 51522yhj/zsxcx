@@ -1,8 +1,11 @@
 <view class="mine-page">
   <view class="brand">
-    <view class="brand-mark">小</view>
+    <view class="brand-mark">
+      <image wx:if="{{settings.logoUrl}}" class="brand-logo" src="{{settings.logoUrl}}" mode="aspectFill" />
+      <text wx:else>小</text>
+    </view>
     <view class="brand-copy">
-      <view class="name">{{settings.siteName || '小于印染'}}</view>
+      <view class="name">{{settings.siteName || '源创潮牌'}}</view>
       <view class="sub">服装、裤子、面料展示与咨询</view>
     </view>
   </view>
@@ -25,5 +28,21 @@
     <button wx:if="{{settings.customerServiceEnabled}}" class="service" open-type="contact">
       {{settings.customerServiceText || '咨询客服'}}
     </button>
+  </view>
+
+  <view class="contact-panel notice-panel">
+    <view class="notice-content">
+      <view>
+        <view class="label">新品上架通知</view>
+        <view class="value small">开启后，新品发布时会通过微信订阅消息提醒你</view>
+      </view>
+      <view wx:if="{{!newProductEnabled}}" class="notice-actions">
+        <button class="notice-action" disabled="{{noticeOperating}}" bindtap="enableNewProduct">开启提醒</button>
+      </view>
+      <view wx:else class="notice-actions double">
+        <button class="notice-action" disabled="{{noticeOperating}}" bindtap="renewNewProduct">再次开启</button>
+        <button class="notice-action secondary" disabled="{{noticeOperating}}" bindtap="disableNewProduct">关闭</button>
+      </view>
+    </view>
   </view>
 </view>

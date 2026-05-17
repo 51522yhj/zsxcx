@@ -23,6 +23,7 @@
         <view class="row" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
           <view class="row-img">
             <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
+            <view class="no-image-text" wx:if="{{!item.displayImageUrl}}">暂无图片</view>
             <image
               class="real-image"
               wx:if="{{item.displayImageUrl}}"
@@ -35,7 +36,7 @@
           </view>
           <view class="row-info">
             <view class="row-name">{{item.name}}</view>
-            <view class="row-summary">{{item.summary || '价格面议'}}</view>
+            <view class="row-summary" wx:if="{{item.summary}}">{{item.summary}}</view>
           </view>
         </view>
       </view>

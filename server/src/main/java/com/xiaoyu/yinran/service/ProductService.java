@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,19 +33,24 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class ProductService {
+    private static final String PUBLISHED = "PUBLISHED";
+    private static final String MEDIA_IMAGE = "IMAGE";
+    private static final String MEDIA_VIDEO = "VIDEO";
+
     private final ProductMapper productMapper;
     private final ProductImageMapper productImageMapper;
     private final ProductTagMapper productTagMapper;
     private final CategoryMapper categoryMapper;
     private final TagMapper tagMapper;
-    private final com.xiaoyu.yinran.config.AppProperties appProperties;
+    private final UploadService uploadService;
+    private final NewProductNotificationService newProductNotificationService;
 
     public PageResult<ProductVO> page(long page, long size, String keyword, Long categoryId, Long tagId, String status, boolean publicOnly) {
         LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>()
                 .orderByDesc(Product::getSortOrder)
                 .orderByDesc(Product::getId);
         if (publicOnly) {
-            wrapper.eq(Product::getStatus, "PUBLISHED");
+            wrapper.eq(Product::getStatus, PUBLISHED);
         } else if (StringUtils.hasText(status)) {
             wrapper.eq(Product::getStatus, status);
         }
@@ -73,7 +79,7 @@ public class ProductService {
 
     public ProductVO detail(Long id, boolean publicOnly) {
         Product product = productMapper.selectById(id);
-        if (product == null || (publicOnly && !"PUBLISHED".equals(product.getStatus()))) {
+        if (product == null || (publicOnly && !PUBLISHED.equals(product.getStatus()))) {
             throw new IllegalArgumentException("商品不存在或已下架");
         }
         return toVO(product);
@@ -84,18 +90,26 @@ public class ProductService {
         if (product == null) {
             throw new IllegalArgumentException("商品不存在");
         }
+        String previousStatus = product.getStatus();
         BeanUtils.copyProperties(request, product, "images", "tagIds");
         product.setContactPhone(null);
         product.setContactWechat(null);
         product.setSearchText(buildSearchText(request));
-        if (!StringUtils.hasText(product.getCoverUrl()) && request.getImages() != null && !request.getImages().isEmpty()) {
-            product.setCoverUrl(request.getImages().get(0).getImageUrl());
-        }
+        product.setCoverUrl(resolveCoverUrl(request.getImages(), product.getCoverUrl()));
         if (!StringUtils.hasText(product.getStatus())) {
             product.setStatus("DRAFT");
         }
         if (product.getSortOrder() == null) {
             product.setSortOrder(0);
+        }
+        if (product.getCarouselAutoplayEnabled() == null) {
+            product.setCarouselAutoplayEnabled(true);
+        }
+        if (product.getCarouselIntervalSeconds() == null || product.getCarouselIntervalSeconds() < 1) {
+            product.setCarouselIntervalSeconds(3);
+        }
+        if (product.getCarouselIntervalSeconds() > 20) {
+            product.setCarouselIntervalSeconds(20);
         }
         if (id == null) {
             productMapper.insert(product);
@@ -104,7 +118,9 @@ public class ProductService {
         }
         replaceImages(product.getId(), request.getImages());
         replaceTags(product.getId(), request.getTagIds());
-        return detail(product.getId(), false);
+        ProductVO vo = detail(product.getId(), false);
+        notifyIfNewlyPublished(previousStatus, vo);
+        return vo;
     }
 
     public void delete(Long id) {
@@ -118,9 +134,16 @@ public class ProductService {
         if (product == null) {
             throw new IllegalArgumentException("商品不存在");
         }
+        String previousStatus = product.getStatus();
         product.setStatus(status);
         productMapper.updateById(product);
-        return detail(id, false);
+        ProductVO vo = detail(id, false);
+        if (PUBLISHED.equals(status)) {
+            newProductNotificationService.notifyNewProduct(vo);
+        } else {
+            notifyIfNewlyPublished(previousStatus, vo);
+        }
+        return vo;
     }
 
     private void replaceImages(Long productId, List<ImageRequest> images) {
@@ -129,19 +152,29 @@ public class ProductService {
             return;
         }
         int index = 0;
+        int detailIndex = 0;
         for (ImageRequest request : images) {
+            String mediaType = normalizeMediaType(request.getMediaType());
             if (!StringUtils.hasText(request.getImageUrl())) {
                 continue;
             }
             ProductImage image = new ProductImage();
             image.setProductId(productId);
+            image.setMediaType(mediaType);
             image.setImageUrl(request.getImageUrl());
             image.setObjectKey(request.getObjectKey());
+            image.setPosterUrl(request.getPosterUrl());
             image.setWidth(request.getWidth());
             image.setHeight(request.getHeight());
             image.setSortOrder(request.getSortOrder() == null ? index : request.getSortOrder());
-            image.setIsCover(Boolean.TRUE.equals(request.getIsCover()) || index == 0);
+            image.setIsCover(Boolean.TRUE.equals(request.getIsCover()));
+            boolean isDetailImage = MEDIA_IMAGE.equals(mediaType) && !Boolean.FALSE.equals(request.getShowInDetail());
+            image.setShowInDetail(isDetailImage);
+            image.setDetailSortOrder(request.getDetailSortOrder() == null ? detailIndex : request.getDetailSortOrder());
             productImageMapper.insert(image);
+            if (isDetailImage) {
+                detailIndex++;
+            }
             index++;
         }
     }
@@ -196,11 +229,16 @@ public class ProductService {
                 .eq(ProductImage::getProductId, product.getId())
                 .orderByAsc(ProductImage::getSortOrder)
                 .orderByAsc(ProductImage::getId));
-        images.forEach(image -> image.setImageUrl(resolveImageUrl(StringUtils.hasText(image.getObjectKey()) ? image.getObjectKey() : image.getImageUrl())));
+        images.forEach(this::normalizeMediaForOutput);
         vo.setImages(images);
-        ProductImage cover = images.stream().filter(image -> Boolean.TRUE.equals(image.getIsCover())).findFirst()
-                .orElse(images.isEmpty() ? null : images.get(0));
-        vo.setCoverUrl(cover == null ? resolveImageUrl(vo.getCoverUrl()) : cover.getImageUrl());
+        ProductImage cover = images.stream()
+                .filter(image -> Boolean.TRUE.equals(image.getIsCover()))
+                .findFirst()
+                .orElseGet(() -> images.stream()
+                        .filter(image -> MEDIA_IMAGE.equals(normalizeMediaType(image.getMediaType())))
+                        .findFirst()
+                        .orElse(images.isEmpty() ? null : images.get(0)));
+        vo.setCoverUrl(cover == null ? resolveUploadUrl(vo.getCoverUrl()) : mediaCoverUrl(cover));
         List<ProductTag> productTags = productTagMapper.selectList(new LambdaQueryWrapper<ProductTag>()
                 .eq(ProductTag::getProductId, product.getId()));
         if (!productTags.isEmpty()) {
@@ -209,33 +247,62 @@ public class ProductService {
                     .collect(Collectors.toMap(Tag::getId, tag -> tag, (a, b) -> a, LinkedHashMap::new));
             vo.setTags(tagIds.stream().map(tagMap::get).filter(Objects::nonNull).collect(Collectors.toList()));
         }
+        vo.getImages().sort(Comparator.comparing(ProductImage::getSortOrder, Comparator.nullsLast(Integer::compareTo))
+                .thenComparing(ProductImage::getId, Comparator.nullsLast(Long::compareTo)));
         return vo;
     }
 
-    private String resolveImageUrl(String url) {
-        if (!StringUtils.hasText(url)) {
-            return url;
+    private void normalizeMediaForOutput(ProductImage media) {
+        media.setMediaType(normalizeMediaType(media.getMediaType()));
+        media.setImageUrl(resolveUploadUrl(StringUtils.hasText(media.getObjectKey()) ? media.getObjectKey() : media.getImageUrl()));
+        media.setPosterUrl(resolveUploadUrl(media.getPosterUrl()));
+        if (media.getShowInDetail() == null) {
+            media.setShowInDetail(MEDIA_IMAGE.equals(media.getMediaType()));
         }
-        String base = appProperties.getPublicFileBaseUrl();
-        if (!StringUtils.hasText(base)) {
-            return url;
+        if (media.getDetailSortOrder() == null) {
+            media.setDetailSortOrder(media.getSortOrder());
         }
-        int uploadsIndex = url.indexOf("/uploads/");
-        if (uploadsIndex >= 0) {
-            url = url.substring(uploadsIndex + "/uploads/".length());
-        } else if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url;
+    }
+
+    private String resolveCoverUrl(List<ImageRequest> images, String fallback) {
+        if (images != null) {
+            ImageRequest explicitCover = images.stream().filter(image -> Boolean.TRUE.equals(image.getIsCover())).findFirst().orElse(null);
+            ImageRequest firstImage = images.stream().filter(image -> MEDIA_IMAGE.equals(normalizeMediaType(image.getMediaType()))).findFirst().orElse(null);
+            ImageRequest firstMedia = images.stream().findFirst().orElse(null);
+            ImageRequest selected = explicitCover != null ? explicitCover : firstImage != null ? firstImage : firstMedia;
+            if (selected != null) {
+                if (MEDIA_VIDEO.equals(normalizeMediaType(selected.getMediaType()))) {
+                    return StringUtils.hasText(selected.getPosterUrl()) ? selected.getPosterUrl() : "";
+                }
+                if (StringUtils.hasText(selected.getImageUrl())) {
+                    return selected.getImageUrl();
+                }
+            }
         }
-        if (url.startsWith("/uploads/")) {
-            url = url.substring("/uploads/".length());
-        } else if (url.startsWith("uploads/")) {
-            url = url.substring("uploads/".length());
-        } else if (url.startsWith("/")) {
-            url = url.substring(1);
+        return fallback;
+    }
+
+    private String mediaCoverUrl(ProductImage media) {
+        if (MEDIA_VIDEO.equals(normalizeMediaType(media.getMediaType())) && StringUtils.hasText(media.getPosterUrl())) {
+            return media.getPosterUrl();
         }
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
+        if (MEDIA_VIDEO.equals(normalizeMediaType(media.getMediaType()))) {
+            return "";
         }
-        return base + "/" + url;
+        return media.getImageUrl();
+    }
+
+    private String normalizeMediaType(String mediaType) {
+        return MEDIA_VIDEO.equalsIgnoreCase(mediaType) ? MEDIA_VIDEO : MEDIA_IMAGE;
+    }
+
+    private void notifyIfNewlyPublished(String previousStatus, ProductVO product) {
+        if (PUBLISHED.equals(product.getStatus()) && !PUBLISHED.equals(previousStatus)) {
+            newProductNotificationService.notifyNewProduct(product);
+        }
+    }
+
+    private String resolveUploadUrl(String url) {
+        return uploadService.resolveFileUrl(url);
     }
 }

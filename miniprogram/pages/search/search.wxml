@@ -44,6 +44,7 @@
     <view class="product-card" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
       <view class="image-wrap">
         <image class="placeholder" src="/assets/ui/image-placeholder.png" mode="aspectFill" />
+        <view class="no-image-text" wx:if="{{!item.displayImageUrl}}">暂无图片</view>
         <image
           class="real-image"
           wx:if="{{item.displayImageUrl}}"
@@ -56,7 +57,7 @@
       </view>
       <view class="product-info">
         <view class="product-name">{{item.name}}</view>
-        <view class="product-meta">{{item.summary || '价格面议'}}</view>
+        <view class="product-meta" wx:if="{{item.summary}}">{{item.summary}}</view>
       </view>
     </view>
   </view>

@@ -1,9 +1,10 @@
 const api = require('../../utils/api')
 const { hydrateProducts } = require('../../utils/image-cache')
+const subscription = require('../../utils/subscription')
 
 Page({
   data: {
-    settings: { siteName: '小于印染', homeSectionTitle: '精选面料' },
+    settings: { siteName: '源创潮牌', homeSectionTitle: '精选面料' },
     announcements: [],
     noticeText: '',
     categories: [],
@@ -13,7 +14,8 @@ Page({
     loading: false,
     finished: false,
     showNotice: false,
-    activeNotice: null
+    activeNotice: null,
+    showSubscribePrompt: false
   },
 
   onLoad() {
@@ -25,7 +27,17 @@ Page({
   },
 
   async loadHome() {
-    wx.showLoading({ title: '加载中' })
+    if (this._homeLoadingPromise) return this._homeLoadingPromise
+    this._homeLoadingPromise = this.doLoadHome()
+    try {
+      return await this._homeLoadingPromise
+    } finally {
+      this._homeLoadingPromise = null
+    }
+  },
+
+  async doLoadHome() {
+    wx.showLoading({ title: '加载中', mask: true })
     try {
       const [settings, announcements, categories] = await Promise.all([
         api.getSettings(),
@@ -33,8 +45,8 @@ Page({
         api.getCategories()
       ])
       const noticeText = announcements.map((item) => item.tickerText).filter(Boolean).join('   |   ')
-      this.setData({ settings, announcements, categories, noticeText })
-      wx.setNavigationBarTitle({ title: settings.siteName || '小于印染' })
+      this.setData({ settings, announcements, categories, noticeText, showSubscribePrompt: subscription.shouldPrompt(settings) })
+      wx.setNavigationBarTitle({ title: settings.siteName || '源创潮牌' })
       await this.loadProducts(true)
     } finally {
       wx.hideLoading()
@@ -81,6 +93,28 @@ Page({
 
   closeNotice() {
     this.setData({ showNotice: false })
+  },
+
+  async enableNewProductNotice() {
+    try {
+      const accepted = await subscription.askNewProductSubscribe(this.data.settings, true)
+      this.setData({ showSubscribePrompt: false })
+      if (!accepted) {
+        wx.showModal({
+          title: '未开启通知',
+          content: '你可以稍后在“我的”页面重新开启新品上架通知。',
+          showCancel: false
+        })
+      }
+    } catch (error) {
+      console.warn('subscribe failed', error)
+      wx.showToast({ title: '通知开启失败', icon: 'none' })
+    }
+  },
+
+  skipNewProductNotice() {
+    subscription.markPromptSkipped()
+    this.setData({ showSubscribePrompt: false })
   },
 
   noop() {},

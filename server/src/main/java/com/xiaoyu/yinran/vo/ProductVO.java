@@ -19,9 +19,10 @@ public class ProductVO {
     private String coverUrl;
     private String status;
     private Integer sortOrder;
+    private Boolean carouselAutoplayEnabled;
+    private Integer carouselIntervalSeconds;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<Tag> tags = new ArrayList<>();
     private List<ProductImage> images = new ArrayList<>();
 }
-

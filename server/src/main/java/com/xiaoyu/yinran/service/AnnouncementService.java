@@ -1,14 +1,12 @@
 package com.xiaoyu.yinran.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.xiaoyu.yinran.config.AppProperties;
 import com.xiaoyu.yinran.dto.AnnouncementRequest;
 import com.xiaoyu.yinran.entity.Announcement;
 import com.xiaoyu.yinran.mapper.AnnouncementMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnnouncementService {
     private final AnnouncementMapper announcementMapper;
-    private final AppProperties appProperties;
+    private final UploadService uploadService;
 
     public List<Announcement> listAll() {
         List<Announcement> announcements = announcementMapper.selectList(new LambdaQueryWrapper<Announcement>()
@@ -59,32 +57,6 @@ public class AnnouncementService {
     }
 
     private void resolveImage(Announcement announcement) {
-        announcement.setImageUrl(resolveUploadUrl(announcement.getImageUrl()));
-    }
-
-    private String resolveUploadUrl(String url) {
-        if (!StringUtils.hasText(url)) {
-            return url;
-        }
-        String base = appProperties.getPublicFileBaseUrl();
-        if (!StringUtils.hasText(base)) {
-            return url;
-        }
-        int uploadsIndex = url.indexOf("/uploads/");
-        if (uploadsIndex >= 0) {
-            url = url.substring(uploadsIndex + "/uploads/".length());
-        } else if (url.startsWith("http://") || url.startsWith("https://")) {
-            return url;
-        } else if (url.startsWith("/uploads/")) {
-            url = url.substring("/uploads/".length());
-        } else if (url.startsWith("uploads/")) {
-            url = url.substring("uploads/".length());
-        } else if (url.startsWith("/")) {
-            url = url.substring(1);
-        }
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 1);
-        }
-        return base + "/" + url;
+        announcement.setImageUrl(uploadService.resolveFileUrl(announcement.getImageUrl()));
     }
 }

@@ -1,5 +1,5 @@
 {
-  "description": "小于印染服装展示平台",
+  "description": "源创潮牌服装展示平台",
   "packOptions": {
     "ignore": [],
     "include": []
@@ -31,7 +31,7 @@
   },
   "compileType": "miniprogram",
   "libVersion": "latest",
-  "appid": "wx2b7905056d251b10",
+  "appid": "wx4f7c3b56b9e74e19",
   "projectname": "xiaoyu-yinran",
   "condition": {},
   "simulatorPluginLibVersion": {},

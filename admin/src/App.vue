@@ -17,7 +17,7 @@
         :key="item.key"
         class="nav-item"
         :class="{ active: current === item.key }"
-        @click="current = item.key"
+        @click="changeCurrent(item.key)"
       >
         <component :is="item.icon" />
         {{ item.label }}
@@ -32,6 +32,7 @@
       <CategoryView v-if="current === 'categories'" />
       <TagView v-if="current === 'tags'" />
       <AnnouncementView v-if="current === 'announcements'" />
+      <MonitoringView v-if="current === 'monitoring'" />
       <SettingsView v-if="current === 'settings'" @saved="applySettings" />
     </main>
   </div>
@@ -39,13 +40,14 @@
 
 <script setup>
 import { computed, h, onMounted, ref } from 'vue'
-import { Bell, Goods, Menu, PriceTag, Setting, SwitchButton } from '@element-plus/icons-vue'
+import { Bell, DataAnalysis, Goods, Menu, PriceTag, Setting, SwitchButton } from '@element-plus/icons-vue'
 import { http } from './api/http'
 import LoginView from './views/LoginView.vue'
 import ProductView from './views/ProductView.vue'
 import CategoryView from './views/CategoryView.vue'
 import TagView from './views/TagView.vue'
 import AnnouncementView from './views/AnnouncementView.vue'
+import MonitoringView from './views/MonitoringView.vue'
 import SettingsView from './views/SettingsView.vue'
 
 const defaultSiteName = '小于印染'
@@ -66,8 +68,14 @@ const nav = [
   { key: 'categories', label: '分类管理', icon: Menu },
   { key: 'tags', label: '标签管理', icon: PriceTag },
   { key: 'announcements', label: '公告管理', icon: Bell },
+  { key: 'monitoring', label: '数据监控', icon: DataAnalysis },
   { key: 'settings', label: '站点配置', icon: Setting }
 ]
+
+function changeCurrent(key) {
+  current.value = key
+  localStorage.setItem('xy_admin_source', key)
+}
 
 function setFavicon(href) {
   let link = document.querySelector('link[rel="icon"]')
@@ -105,5 +113,8 @@ function logout() {
   token.value = ''
 }
 
-onMounted(loadPublicSettings)
+onMounted(() => {
+  localStorage.setItem('xy_admin_source', current.value)
+  loadPublicSettings()
+})
 </script>
