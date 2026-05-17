@@ -62,8 +62,10 @@
     </view>
   </view>
 
-  <view class="empty" wx:if="{{searched && !products.length}}">
+  <view class="empty" wx:if="{{searched && !loading && !products.length}}">
     <image src="/assets/ui/empty-box.png" mode="aspectFit" />
     <view>没有找到相关商品</view>
   </view>
+  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="loading" wx:if="{{!loading && finished && products.length}}">已经到底了</view>
 </view>

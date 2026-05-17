@@ -1,6 +1,6 @@
 <view class="category-page">
-  <view class="top-search">
-    <input value="{{keyword}}" placeholder="搜索" bindinput="input" confirm-type="search" bindconfirm="search" />
+  <view class="top-search" bindtap="goSearch">
+    <view class="search-entry">搜索</view>
   </view>
 
   <view class="body">
@@ -18,7 +18,7 @@
       </view>
     </scroll-view>
 
-    <scroll-view scroll-y class="content">
+    <scroll-view scroll-y class="content" lower-threshold="120" bindscrolltolower="loadMoreProducts">
       <view class="list">
         <view class="row" wx:for="{{products}}" wx:key="id" data-id="{{item.id}}" bindtap="goDetail">
           <view class="row-img">
@@ -41,10 +41,12 @@
         </view>
       </view>
 
-      <view class="empty" wx:if="{{!products.length}}">
+      <view class="empty" wx:if="{{!loading && !products.length}}">
         <image src="/assets/ui/empty-box.png" mode="aspectFit" />
         <view>该分类下暂无相关内容</view>
       </view>
+      <view class="loading" wx:if="{{loading}}">加载中...</view>
+      <view class="loading" wx:if="{{!loading && finished && products.length}}">已经到底了</view>
     </scroll-view>
   </view>
 </view>

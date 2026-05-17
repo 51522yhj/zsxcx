@@ -1,6 +1,8 @@
 const api = require('../../utils/api')
-const { hydrateProducts } = require('../../utils/image-cache')
+const { mapProductsForDisplay } = require('../../utils/image-cache')
 const subscription = require('../../utils/subscription')
+
+const PAGE_SIZE = 20
 
 Page({
   data: {
@@ -58,14 +60,14 @@ Page({
     const page = reset ? 1 : this.data.page
     this.setData({ loading: true, ...(reset ? { products: [], sections: [], finished: false } : {}) })
     try {
-      const result = await api.getProducts({ page, size: 30 })
+      const result = await api.getProducts({ page, size: PAGE_SIZE })
       const records = await this.normalizeProducts(result.records || [])
       const products = reset ? records : this.data.products.concat(records)
       this.setData({
         products,
         sections: this.buildSections(products),
         page: page + 1,
-        finished: records.length < 30
+        finished: records.length < PAGE_SIZE
       })
     } finally {
       this.setData({ loading: false })
@@ -83,7 +85,7 @@ Page({
   },
 
   async normalizeProducts(products) {
-    return hydrateProducts(products)
+    return mapProductsForDisplay(products)
   },
 
   openNotice() {

@@ -82,6 +82,13 @@ async function hydrateProducts(products) {
   }))
 }
 
+function mapProductsForDisplay(products) {
+  return (products || []).map((product) => {
+    const rawImageUrl = getProductImageUrl(product)
+    return { ...product, rawImageUrl, displayImageUrl: rawImageUrl }
+  })
+}
+
 async function hydrateImages(images) {
   return Promise.all((images || []).map(async (image) => {
     const rawImageUrl = image.imageUrl || ''
@@ -114,6 +121,7 @@ async function hydrateMedia(mediaList) {
 module.exports = {
   cacheImage,
   hydrateProducts,
+  mapProductsForDisplay,
   hydrateImages,
   hydrateMedia
 }

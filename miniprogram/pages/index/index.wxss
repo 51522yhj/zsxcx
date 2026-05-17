@@ -154,7 +154,9 @@
   width: 100%;
   height: 194rpx;
   overflow: hidden;
-  background: #f1f1f1;
+  background: linear-gradient(90deg, #f1f1f1 0%, #fafafa 45%, #f1f1f1 90%);
+  background-size: 240% 100%;
+  animation: imageLoading 1.2s ease-in-out infinite;
 }
 
 .image-wrap image {
