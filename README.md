@@ -87,3 +87,14 @@ D:\code\fzxcx\miniprogram
 - Dockerfile 默认使用 `prod` profile。
 - 上线前确认 `server/src/main/resources/application-prod.yml` 已在部署环境中配置好真实数据库和对象存储访问地址。
 - 上线前把 `miniprogram/utils/config.js` 的 `mode` 改为 `cloud`。
+
+## 小程序页面预览
+
+| 预览 | 预览 |
+| --- | --- |
+| ![小程序截图 01](docs/images/miniprogram/screen-01.png) | ![小程序截图 02](docs/images/miniprogram/screen-02.png) |
+| ![小程序截图 03](docs/images/miniprogram/screen-03.png) | ![小程序截图 04](docs/images/miniprogram/screen-04.png) |
+| ![小程序截图 05](docs/images/miniprogram/screen-05.png) | ![小程序截图 06](docs/images/miniprogram/screen-06.png) |
+| ![小程序截图 07](docs/images/miniprogram/screen-07.png) | ![小程序截图 08](docs/images/miniprogram/screen-08.png) |
+| ![小程序截图 09](docs/images/miniprogram/screen-09.png) | ![小程序截图 10](docs/images/miniprogram/screen-10.png) |
+| ![小程序截图 11](docs/images/miniprogram/screen-11.png) |  |
