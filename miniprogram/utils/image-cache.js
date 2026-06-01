@@ -65,6 +65,29 @@ function cacheImage(url) {
   })
 }
 
+function prepareShareImage(url) {
+  const fallback = VIDEO_PLACEHOLDER
+  if (!url || url.startsWith('/')) return Promise.resolve(url || fallback)
+
+  return new Promise((resolve) => {
+    wx.downloadFile({
+      url,
+      success: (res) => {
+        if (res.statusCode >= 200 && res.statusCode < 300 && res.tempFilePath) {
+          resolve(res.tempFilePath)
+          return
+        }
+        console.warn('share image download failed', url, res.statusCode)
+        resolve(fallback)
+      },
+      fail: (error) => {
+        console.warn('share image download failed', url, error)
+        resolve(fallback)
+      }
+    })
+  })
+}
+
 function getProductImageUrl(product) {
   if (product.coverUrl) return product.coverUrl
   const firstImage = (product.images || []).find((item) => item.mediaType !== 'VIDEO')
@@ -78,14 +101,14 @@ async function hydrateProducts(products) {
   return Promise.all((products || []).map(async (product) => {
     const rawImageUrl = getProductImageUrl(product)
     const displayImageUrl = await cacheImage(rawImageUrl)
-    return { ...product, rawImageUrl, displayImageUrl }
+    return Object.assign({}, product, { rawImageUrl, displayImageUrl })
   }))
 }
 
 function mapProductsForDisplay(products) {
   return (products || []).map((product) => {
     const rawImageUrl = getProductImageUrl(product)
-    return { ...product, rawImageUrl, displayImageUrl: rawImageUrl }
+    return Object.assign({}, product, { rawImageUrl, displayImageUrl: rawImageUrl })
   })
 }
 
@@ -93,7 +116,7 @@ async function hydrateImages(images) {
   return Promise.all((images || []).map(async (image) => {
     const rawImageUrl = image.imageUrl || ''
     const displayImageUrl = await cacheImage(rawImageUrl)
-    return { ...image, rawImageUrl, imageUrl: displayImageUrl }
+    return Object.assign({}, image, { rawImageUrl, imageUrl: displayImageUrl })
   }))
 }
 
@@ -103,25 +126,44 @@ async function hydrateMedia(mediaList) {
     if (mediaType === 'VIDEO') {
       const rawPosterUrl = media.posterUrl || ''
       const posterUrl = rawPosterUrl ? await cacheImage(rawPosterUrl) : VIDEO_PLACEHOLDER
-      return {
-        ...media,
+      return Object.assign({}, media, {
         mediaType,
         rawImageUrl: media.imageUrl || '',
         rawPosterUrl: rawPosterUrl || VIDEO_PLACEHOLDER,
         posterUrl,
         videoId: `media-video-${index}`
-      }
+      })
     }
     const rawImageUrl = media.imageUrl || ''
     const displayImageUrl = await cacheImage(rawImageUrl)
-    return { ...media, mediaType, rawImageUrl, imageUrl: displayImageUrl }
+    return Object.assign({}, media, { mediaType, rawImageUrl, imageUrl: displayImageUrl })
   }))
+}
+
+function mapMediaForDisplay(mediaList) {
+  return (mediaList || []).map((media, index) => {
+    const mediaType = media.mediaType === 'VIDEO' ? 'VIDEO' : 'IMAGE'
+    if (mediaType === 'VIDEO') {
+      const rawPosterUrl = media.posterUrl || ''
+      return Object.assign({}, media, {
+        mediaType,
+        rawImageUrl: media.imageUrl || '',
+        rawPosterUrl: rawPosterUrl || VIDEO_PLACEHOLDER,
+        posterUrl: rawPosterUrl || VIDEO_PLACEHOLDER,
+        videoId: `media-video-${index}`
+      })
+    }
+    const rawImageUrl = media.imageUrl || ''
+    return Object.assign({}, media, { mediaType, rawImageUrl, imageUrl: rawImageUrl })
+  })
 }
 
 module.exports = {
   cacheImage,
+  prepareShareImage,
   hydrateProducts,
   mapProductsForDisplay,
   hydrateImages,
-  hydrateMedia
+  hydrateMedia,
+  mapMediaForDisplay
 }

@@ -32,8 +32,9 @@ public class AdminProductController {
                                                    @RequestParam(required = false) String keyword,
                                                    @RequestParam(required = false) Long categoryId,
                                                    @RequestParam(required = false) Long tagId,
-                                                   @RequestParam(required = false) String status) {
-        return ApiResponse.ok(productService.page(page, size, keyword, categoryId, tagId, status, false));
+                                                   @RequestParam(required = false) String status,
+                                                   @RequestParam(required = false) String sort) {
+        return ApiResponse.ok(productService.page(page, size, keyword, categoryId, tagId, status, false, sort));
     }
 
     @GetMapping("/{id}")
@@ -62,4 +63,3 @@ public class AdminProductController {
         return ApiResponse.ok();
     }
 }
-

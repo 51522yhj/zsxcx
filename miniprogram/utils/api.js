@@ -14,7 +14,7 @@ function visitorId() {
 function currentSource() {
   const pages = getCurrentPages()
   const page = pages && pages.length ? pages[pages.length - 1] : null
-  return page?.route || 'app'
+  return (page && page.route) || 'app'
 }
 
 function trackingHeaders() {
@@ -42,10 +42,9 @@ function request(path, data = {}, method = 'GET') {
         url: `${baseUrl()}${path}`,
         method,
         data,
-        header: {
-          'content-type': 'application/json',
-          ...trackingHeaders()
-        },
+        header: Object.assign({
+          'content-type': 'application/json'
+        }, trackingHeaders()),
         success: (res) => {
           try {
             resolve(unwrap(res))
@@ -68,11 +67,10 @@ function request(path, data = {}, method = 'GET') {
     path,
     method,
     data,
-    header: {
+    header: Object.assign({
       'X-WX-SERVICE': config.service,
-      'content-type': 'application/json',
-      ...trackingHeaders()
-    }
+      'content-type': 'application/json'
+    }, trackingHeaders())
   }).then(unwrap)
 }
 

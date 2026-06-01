@@ -18,6 +18,7 @@ public class AppProperties {
     private String cosKeyPrefix = "uploads";
     private String cosSecretId;
     private String cosSecretKey;
+    private String cosCustomDomain;
     private long cosSignedUrlSeconds = 86400;
     private String wechatAppId;
     private String wechatAppSecret;

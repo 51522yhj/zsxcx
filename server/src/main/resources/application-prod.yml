@@ -20,12 +20,13 @@ app:
   cos-key-prefix: ${COS_KEY_PREFIX:uploads}
   cos-secret-id: ${COS_SECRET_ID:}
   cos-secret-key: ${COS_SECRET_KEY:}
+  cos-custom-domain: ${COS_CUSTOM_DOMAIN:img.fuzhuangzhanshi.online}
   cos-signed-url-seconds: ${COS_SIGNED_URL_SECONDS:86400}
   wechat-app-id: ${WECHAT_APP_ID:}
   wechat-app-secret: ${WECHAT_APP_SECRET:}
   wechat-miniprogram-state: ${WECHAT_MINIPROGRAM_STATE:developer}
   new-product-template-id: ${NEW_PRODUCT_TEMPLATE_ID:}
-  public-file-base-url: ${PUBLIC_FILE_BASE_URL:}
+  public-file-base-url: ${PUBLIC_FILE_BASE_URL:https://img.fuzhuangzhanshi.online}
   default-admin-username: ${DEFAULT_ADMIN_USERNAME:admin}
   default-admin-password: ${DEFAULT_ADMIN_PASSWORD:admin123}
   visit-event-retention-days: ${VISIT_EVENT_RETENTION_DAYS:180}

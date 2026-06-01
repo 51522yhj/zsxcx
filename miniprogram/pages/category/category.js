@@ -1,5 +1,8 @@
 const api = require('../../utils/api')
-const { hydrateProducts } = require('../../utils/image-cache')
+const imageCache = require('../../utils/image-cache')
+
+const mapProductsForDisplay = imageCache.mapProductsForDisplay
+const PAGE_SIZE = 20
 
 Page({
   data: {
@@ -9,14 +12,32 @@ Page({
     expandedParentId: null,
     activeCategoryId: null,
     products: [],
-    keyword: ''
+    skeletonItems: [1, 2, 3, 4, 5],
+    keyword: '',
+    page: 1,
+    loading: false,
+    finished: false
   },
 
   async onShow() {
-    const [settings, categories] = await Promise.all([api.getSettings(), api.getCategories()])
-    const stored = wx.getStorageSync('selectedCategoryId')
-    wx.removeStorageSync('selectedCategoryId')
-    const selectedId = stored ? Number(stored) : null
+    await this.loadCategory()
+  },
+
+  async onPullDownRefresh() {
+    try {
+      await this.loadCategory(true)
+    } finally {
+      wx.stopPullDownRefresh()
+    }
+  },
+
+  async loadCategory(refresh = false) {
+    const result = await Promise.all([api.getSettings(), api.getCategories()])
+    const settings = result[0]
+    const categories = result[1]
+    const stored = refresh ? '' : wx.getStorageSync('selectedCategoryId')
+    if (!refresh) wx.removeStorageSync('selectedCategoryId')
+    const selectedId = stored ? Number(stored) : (refresh ? this.data.activeCategoryId : null)
     const expandedParentId = selectedId ? this.resolveParentId(categories, selectedId) : null
     this.setData({
       settings,
@@ -25,7 +46,7 @@ Page({
       activeCategoryId: selectedId,
       sideItems: this.buildSideItems(categories, expandedParentId)
     })
-    this.loadProducts()
+    await this.loadProducts(true)
   },
 
   resolveParentId(categories, selectedId) {
@@ -66,7 +87,7 @@ Page({
       activeCategoryId: id,
       sideItems: this.buildSideItems(this.data.categories, expandedParentId)
     })
-    this.loadProducts()
+    this.loadProducts(true)
   },
 
   input(e) {
@@ -74,18 +95,43 @@ Page({
   },
 
   search() {
+    this.loadProducts(true)
+  },
+
+  loadMoreProducts() {
     this.loadProducts()
   },
 
-  async loadProducts() {
-    const params = { page: 1, size: 80, keyword: this.data.keyword }
+  async loadProducts(reset = false) {
+    if (this.data.loading || (!reset && this.data.finished)) return
+    const page = reset ? 1 : this.data.page
+    const loadingData = { loading: true }
+    if (reset) {
+      loadingData.products = []
+      loadingData.finished = false
+    }
+    this.setData(loadingData)
+    const params = { page, size: PAGE_SIZE, keyword: this.data.keyword }
     if (this.data.activeCategoryId) params.categoryId = this.data.activeCategoryId
-    const result = await api.getProducts(params)
-    this.setData({ products: await this.normalizeProducts(result.records || []) })
+    try {
+      const result = await api.getProducts(params)
+      const records = await this.normalizeProducts(result.records || [])
+      this.setData({
+        products: reset ? records : this.data.products.concat(records),
+        page: page + 1,
+        finished: records.length < PAGE_SIZE
+      })
+    } finally {
+      this.setData({ loading: false })
+    }
   },
 
   async normalizeProducts(products) {
-    return hydrateProducts(products)
+    return mapProductsForDisplay(products)
+  },
+
+  goSearch() {
+    wx.switchTab({ url: '/pages/search/search' })
   },
 
   goDetail(e) {

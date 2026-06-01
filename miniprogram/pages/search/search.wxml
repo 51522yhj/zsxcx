@@ -5,6 +5,16 @@
       <button bindtap="search">搜索</button>
     </view>
 
+    <view class="history" wx:if="{{searchHistory.length && !keyword && !searched}}">
+      <view class="history-head">
+        <text>搜索历史</text>
+        <text class="history-clear" bindtap="clearHistory">清空</text>
+      </view>
+      <view class="history-list">
+        <view wx:for="{{searchHistory}}" wx:key="*this" class="history-chip" data-keyword="{{item}}" bindtap="selectHistory">{{item}}</view>
+      </view>
+    </view>
+
     <view class="filter-row">
       <view class="filter-label">分类</view>
       <scroll-view scroll-x class="filter-strip">
@@ -29,6 +39,19 @@
           data-id="{{item.id}}"
           bindtap="selectTag"
         >{{item.name}}</view>
+      </scroll-view>
+    </view>
+
+    <view class="filter-row sort-row">
+      <view class="filter-label">排序</view>
+      <scroll-view scroll-x class="filter-strip">
+        <view
+          wx:for="{{sortOptions}}"
+          wx:key="value"
+          class="sort-chip {{activeSort === item.value ? 'active' : ''}}"
+          data-value="{{item.value}}"
+          bindtap="selectSort"
+        >{{item.label}}</view>
       </scroll-view>
     </view>
   </view>
@@ -62,10 +85,18 @@
     </view>
   </view>
 
+  <view class="product-grid search-grid skeleton-grid" wx:if="{{loading && !products.length}}">
+    <view class="product-card skeleton-card" wx:for="{{skeletonItems}}" wx:key="*this">
+      <view class="skeleton skeleton-img"></view>
+      <view class="skeleton skeleton-line"></view>
+      <view class="skeleton skeleton-line short"></view>
+    </view>
+  </view>
+
   <view class="empty" wx:if="{{searched && !loading && !products.length}}">
     <image src="/assets/ui/empty-box.png" mode="aspectFit" />
     <view>没有找到相关商品</view>
   </view>
-  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="loading" wx:if="{{loading && products.length}}">加载中...</view>
   <view class="loading" wx:if="{{!loading && finished && products.length}}">已经到底了</view>
 </view>

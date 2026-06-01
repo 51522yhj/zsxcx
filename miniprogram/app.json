@@ -10,7 +10,8 @@
     "navigationBarTitleText": "源创潮牌",
     "navigationBarBackgroundColor": "#ffffff",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#f7f7f7"
+    "backgroundColor": "#f7f7f7",
+    "enablePullDownRefresh": true
   },
   "tabBar": {
     "color": "#777777",

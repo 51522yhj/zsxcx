@@ -29,6 +29,7 @@
         </el-table-column>
         <el-table-column prop="name" label="名称" min-width="180" />
         <el-table-column prop="categoryName" label="分类" width="120" />
+        <el-table-column prop="sortOrder" label="热度" width="90" sortable />
         <el-table-column label="标签" min-width="160">
           <template #default="{ row }">
             <el-tag v-for="tag in row.tags" :key="tag.id" size="small" class="tag">{{ tag.name }}</el-tag>
@@ -74,6 +75,12 @@
           <el-select v-model="form.tagIds" multiple style="width: 100%">
             <el-option v-for="tag in tags" :key="tag.id" :label="tag.name" :value="tag.id" />
           </el-select>
+        </el-form-item>
+        <el-form-item label="热度">
+          <div class="heat-editor">
+            <el-input-number v-model="form.sortOrder" :min="0" :max="999999" :step="1" />
+            <span class="setting-tip">数值越大，小程序“热度”排序越靠前</span>
+          </div>
         </el-form-item>
         <el-form-item label="摘要">
           <el-input v-model="form.summary" placeholder="例如 价格面议" />
@@ -467,6 +474,12 @@ onMounted(() => {
 }
 
 .carousel-setting {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.heat-editor {
   display: flex;
   align-items: center;
   gap: 14px;

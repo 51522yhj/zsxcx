@@ -10,6 +10,9 @@ uploads/
 *.env.*
 !server/cloud-env.example.env
 server/uploads/
+server/app.jar
+server/logs/
+db-backups/
 admin/.env.local
 miniprogram/project.private.config.json
 

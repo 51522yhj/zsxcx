@@ -22,12 +22,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.LinkedHashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,16 +50,18 @@ public class ProductService {
     private final NewProductNotificationService newProductNotificationService;
 
     public PageResult<ProductVO> page(long page, long size, String keyword, Long categoryId, Long tagId, String status, boolean publicOnly) {
-        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<Product>()
-                .orderByDesc(Product::getSortOrder)
-                .orderByDesc(Product::getId);
+        return page(page, size, keyword, categoryId, tagId, status, publicOnly, null);
+    }
+
+    public PageResult<ProductVO> page(long page, long size, String keyword, Long categoryId, Long tagId, String status, boolean publicOnly, String sort) {
+        LambdaQueryWrapper<Product> wrapper = new LambdaQueryWrapper<>();
         if (publicOnly) {
             wrapper.eq(Product::getStatus, PUBLISHED);
         } else if (StringUtils.hasText(status)) {
             wrapper.eq(Product::getStatus, status);
         }
         if (categoryId != null) {
-            wrapper.eq(Product::getCategoryId, categoryId);
+            wrapper.in(Product::getCategoryId, collectCategoryIds(categoryId));
         }
         if (StringUtils.hasText(keyword)) {
             wrapper.like(Product::getSearchText, keyword.trim());
@@ -73,8 +79,43 @@ public class ProductService {
             wrapper.in(Product::getId, productIds);
         }
 
+        applySort(wrapper, sort);
         Page<Product> result = productMapper.selectPage(Page.of(page, size), wrapper);
         return new PageResult<>(result.getTotal(), result.getCurrent(), result.getSize(), toVOList(result.getRecords()));
+    }
+
+    private Set<Long> collectCategoryIds(Long categoryId) {
+        List<Category> categories = categoryMapper.selectList(null);
+        Map<Long, List<Long>> childrenByParent = categories.stream()
+                .filter(category -> category.getParentId() != null)
+                .collect(Collectors.groupingBy(
+                        Category::getParentId,
+                        LinkedHashMap::new,
+                        Collectors.mapping(Category::getId, Collectors.toList())
+                ));
+        Set<Long> categoryIds = new LinkedHashSet<>();
+        Deque<Long> pending = new ArrayDeque<>();
+        pending.add(categoryId);
+        while (!pending.isEmpty()) {
+            Long currentId = pending.removeFirst();
+            if (categoryIds.add(currentId)) {
+                pending.addAll(childrenByParent.getOrDefault(currentId, Collections.emptyList()));
+            }
+        }
+        return categoryIds;
+    }
+
+    private void applySort(LambdaQueryWrapper<Product> wrapper, String sort) {
+        String normalized = StringUtils.hasText(sort) ? sort.trim().toLowerCase() : "";
+        if ("latest".equals(normalized)) {
+            wrapper.orderByDesc(Product::getUpdatedAt).orderByDesc(Product::getId);
+            return;
+        }
+        if ("oldest".equals(normalized)) {
+            wrapper.orderByAsc(Product::getUpdatedAt).orderByDesc(Product::getId);
+            return;
+        }
+        wrapper.orderByDesc(Product::getSortOrder).orderByDesc(Product::getId);
     }
 
     public ProductVO detail(Long id, boolean publicOnly) {

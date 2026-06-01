@@ -54,8 +54,9 @@ public class PublicController {
                                                        @RequestParam(defaultValue = "20") long size,
                                                        @RequestParam(required = false) String keyword,
                                                        @RequestParam(required = false) Long categoryId,
-                                                       @RequestParam(required = false) Long tagId) {
-        return ApiResponse.ok(productService.page(page, size, keyword, categoryId, tagId, null, true));
+                                                       @RequestParam(required = false) Long tagId,
+                                                       @RequestParam(required = false) String sort) {
+        return ApiResponse.ok(productService.page(page, size, keyword, categoryId, tagId, null, true, sort));
     }
 
     @GetMapping("/products/{id}")
@@ -63,4 +64,3 @@ public class PublicController {
         return ApiResponse.ok(productService.detail(id, true));
     }
 }
-

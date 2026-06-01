@@ -7,13 +7,13 @@
         class="gallery-media gallery-video"
         src="{{item.rawImageUrl}}"
         poster="{{item.posterUrl}}"
-        autoplay="{{true}}"
-        muted="{{true}}"
+        autoplay="{{false}}"
+        muted="{{index !== currentIndex}}"
         controls="{{true}}"
         show-progress="{{true}}"
         object-fit="cover"
       />
-      <image wx:else class="gallery-media" src="{{item.imageUrl}}" mode="aspectFill" />
+      <image wx:else class="gallery-media" src="{{item.imageUrl}}" data-url="{{item.rawImageUrl || item.imageUrl}}" mode="aspectFill" bindtap="previewGalleryImage" />
     </swiper-item>
   </swiper>
 
@@ -31,12 +31,20 @@
   </view>
 
   <view class="description">{{product.description || '暂无详细说明，可点击客服咨询。'}}</view>
-  <image wx:for="{{detailImages}}" wx:key="imageUrl" class="detail-img" src="{{item.imageUrl}}" mode="widthFix" />
+  <image wx:for="{{detailImages}}" wx:key="imageUrl" class="detail-img" src="{{item.imageUrl}}" data-url="{{item.rawImageUrl || item.imageUrl}}" mode="widthFix" bindtap="previewDetailImage" />
 
   <view class="action-bar safe-bottom">
     <button class="bar-item" bindtap="goHome">首页</button>
-    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{shareImageUrl}}">
+    <button class="bar-item" open-type="share">分享</button>
+    <button class="bar-service" open-type="contact" show-message-card="true" send-message-title="{{product.name}}" send-message-path="/pages/detail/detail?id={{product.id}}" send-message-img="{{messageImageUrl}}">
       客服
     </button>
   </view>
+</view>
+
+<view class="detail-skeleton" wx:else>
+  <view class="skeleton gallery-skeleton"></view>
+  <view class="skeleton line wide"></view>
+  <view class="skeleton line"></view>
+  <view class="skeleton block"></view>
 </view>

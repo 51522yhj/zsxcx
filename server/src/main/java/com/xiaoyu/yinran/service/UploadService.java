@@ -7,7 +7,9 @@ import com.qcloud.cos.ClientConfig;
 import com.qcloud.cos.auth.BasicCOSCredentials;
 import com.qcloud.cos.auth.BasicSessionCredentials;
 import com.qcloud.cos.auth.COSCredentials;
+import com.qcloud.cos.endpoint.UserSpecifiedEndpointBuilder;
 import com.qcloud.cos.http.HttpMethodName;
+import com.qcloud.cos.http.HttpProtocol;
 import com.qcloud.cos.model.GeneratePresignedUrlRequest;
 import com.qcloud.cos.model.ObjectMetadata;
 import com.qcloud.cos.model.PutObjectRequest;
@@ -143,7 +145,7 @@ public class UploadService {
         String cosKey = buildCosKey(objectKey);
         COSCredentials credentials = cosCredentials();
 
-        COSClient client = new COSClient(credentials, new ClientConfig(new Region(region)));
+        COSClient client = new COSClient(credentials, cosClientConfig(region));
         try (InputStream inputStream = file.getInputStream()) {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(file.getSize());
@@ -201,7 +203,7 @@ public class UploadService {
         String region = required(appProperties.getCosRegion(), "COS_REGION is required");
         long seconds = Math.max(signedSeconds, 60);
         Date expiration = Date.from(Instant.now().plusSeconds(seconds));
-        COSClient client = new COSClient(cosCredentialsUnchecked(), new ClientConfig(new Region(region)));
+        COSClient client = new COSClient(cosCredentialsUnchecked(), cosClientConfig(region));
         try {
             GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, cosKey, method);
             request.setExpiration(expiration);
@@ -220,6 +222,30 @@ public class UploadService {
         } catch (IOException e) {
             throw new IllegalStateException("Failed to prepare COS credentials", e);
         }
+    }
+
+    private ClientConfig cosClientConfig(String region) {
+        ClientConfig config = new ClientConfig(new Region(region));
+        String customDomain = normalizeDomain(appProperties.getCosCustomDomain());
+        if (StringUtils.hasText(customDomain)) {
+            config.setHttpProtocol(HttpProtocol.https);
+            config.setEndpointBuilder(new UserSpecifiedEndpointBuilder(customDomain, "service.cos.myqcloud.com"));
+        }
+        return config;
+    }
+
+    private String normalizeDomain(String domain) {
+        if (!StringUtils.hasText(domain)) {
+            return "";
+        }
+        String value = trimRightSlash(domain.trim());
+        if (value.startsWith("https://")) {
+            return value.substring("https://".length());
+        }
+        if (value.startsWith("http://")) {
+            return value.substring("http://".length());
+        }
+        return value;
     }
 
     private String normalizeObjectKey(String urlOrObjectKey) {

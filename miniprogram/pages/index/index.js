@@ -1,7 +1,8 @@
 const api = require('../../utils/api')
-const { mapProductsForDisplay } = require('../../utils/image-cache')
+const imageCache = require('../../utils/image-cache')
 const subscription = require('../../utils/subscription')
 
+const mapProductsForDisplay = imageCache.mapProductsForDisplay
 const PAGE_SIZE = 20
 
 Page({
@@ -12,6 +13,7 @@ Page({
     categories: [],
     sections: [],
     products: [],
+    skeletonItems: [1, 2, 3, 4, 5, 6],
     page: 1,
     loading: false,
     finished: false,
@@ -28,6 +30,14 @@ Page({
     this.loadProducts()
   },
 
+  async onPullDownRefresh() {
+    try {
+      await this.loadHome()
+    } finally {
+      wx.stopPullDownRefresh()
+    }
+  },
+
   async loadHome() {
     if (this._homeLoadingPromise) return this._homeLoadingPromise
     this._homeLoadingPromise = this.doLoadHome()
@@ -39,26 +49,30 @@ Page({
   },
 
   async doLoadHome() {
-    wx.showLoading({ title: '加载中', mask: true })
-    try {
-      const [settings, announcements, categories] = await Promise.all([
-        api.getSettings(),
-        api.getAnnouncements(),
-        api.getCategories()
-      ])
-      const noticeText = announcements.map((item) => item.tickerText).filter(Boolean).join('   |   ')
-      this.setData({ settings, announcements, categories, noticeText, showSubscribePrompt: subscription.shouldPrompt(settings) })
-      wx.setNavigationBarTitle({ title: settings.siteName || '源创潮牌' })
-      await this.loadProducts(true)
-    } finally {
-      wx.hideLoading()
-    }
+    const result = await Promise.all([
+      api.getSettings(),
+      api.getAnnouncements(),
+      api.getCategories()
+    ])
+    const settings = result[0]
+    const announcements = result[1]
+    const categories = result[2]
+    const noticeText = announcements.map((item) => item.tickerText).filter(Boolean).join('   |   ')
+    this.setData({ settings, announcements, categories, noticeText, showSubscribePrompt: subscription.shouldPrompt(settings) })
+    wx.setNavigationBarTitle({ title: settings.siteName || '源创潮牌' })
+    await this.loadProducts(true)
   },
 
   async loadProducts(reset = false) {
     if (this.data.loading || (!reset && this.data.finished)) return
     const page = reset ? 1 : this.data.page
-    this.setData({ loading: true, ...(reset ? { products: [], sections: [], finished: false } : {}) })
+    const loadingData = { loading: true }
+    if (reset) {
+      loadingData.products = []
+      loadingData.sections = []
+      loadingData.finished = false
+    }
+    this.setData(loadingData)
     try {
       const result = await api.getProducts({ page, size: PAGE_SIZE })
       const records = await this.normalizeProducts(result.records || [])
@@ -77,11 +91,17 @@ Page({
   buildSections(products) {
     const map = {}
     products.forEach((item) => {
-      const key = item.categoryName || '精选面料'
+      const key = item.categoryName || '未分类'
       if (!map[key]) map[key] = []
       map[key].push(item)
     })
-    return Object.keys(map).map((title) => ({ title, products: map[title].slice(0, 6) }))
+    return Object.keys(map)
+      .sort((left, right) => {
+        if (left === '未分类') return 1
+        if (right === '未分类') return -1
+        return 0
+      })
+      .map((title) => ({ title, products: map[title].slice(0, 6) }))
   },
 
   async normalizeProducts(products) {

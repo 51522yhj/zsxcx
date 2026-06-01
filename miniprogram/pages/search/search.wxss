@@ -45,6 +45,48 @@
   text-align: center;
 }
 
+.history {
+  margin-top: 22rpx;
+  padding: 20rpx 22rpx;
+  border-radius: 18rpx;
+  background: #ffffff;
+}
+
+.history-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #222222;
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+.history-clear {
+  color: #999999;
+  font-weight: 400;
+}
+
+.history-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.history-chip {
+  max-width: 240rpx;
+  height: 54rpx;
+  padding: 0 22rpx;
+  border-radius: 28rpx;
+  background: #f7f7f7;
+  color: #555555;
+  font-size: 26rpx;
+  line-height: 54rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .filter-row {
   display: flex;
   align-items: center;
@@ -73,7 +115,8 @@
 }
 
 .category-chip,
-.tag-chip {
+.tag-chip,
+.sort-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -97,7 +140,8 @@
 }
 
 .category-chip.active,
-.tag-chip.active {
+.tag-chip.active,
+.sort-chip.active {
   background: #ff2d2d;
   border-color: #ff2d2d;
   color: #ffffff;
@@ -121,11 +165,16 @@
 }
 
 .search-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 18rpx;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .search-grid .product-card {
-  width: calc((100% - 18rpx) / 2);
+  width: 100%;
+  min-width: 0;
   border-radius: 12rpx;
 }
 
@@ -168,7 +217,45 @@
   margin-top: 18rpx;
   color: #888888;
   font-size: 32rpx;
-  font-weight: 700;
+  font-weight: 500;
+}
+
+.skeleton-grid {
+  pointer-events: none;
+}
+
+.skeleton-card {
+  min-height: 470rpx;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #eeeeee 0%, #f8f8f8 45%, #eeeeee 90%);
+  background-size: 240% 100%;
+  animation: imageLoading 1.2s ease-in-out infinite;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 330rpx;
+}
+
+.skeleton-line {
+  width: 76%;
+  height: 28rpx;
+  margin: 24rpx 20rpx 0;
+  border-radius: 14rpx;
+}
+
+.skeleton-line.short {
+  width: 48%;
+  margin-top: 18rpx;
+}
+
+@keyframes imageLoading {
+  0% { background-position: 120% 0; }
+  100% { background-position: -120% 0; }
 }
 
 .empty {

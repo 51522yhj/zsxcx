@@ -16,7 +16,7 @@
       <view class="line"></view>
       <text>{{item.title}}</text>
       <view class="line"></view>
-      <view class="more" data-id="{{item.products[0].categoryId}}" bindtap="goCategory">更多 ></view>
+      <view class="more" wx:if="{{item.products[0].categoryId}}" data-id="{{item.products[0].categoryId}}" bindtap="goCategory">更多 ></view>
     </view>
     <view class="product-grid">
       <view class="product-card" wx:for="{{item.products}}" wx:for-item="product" wx:key="id" data-id="{{product.id}}" bindtap="goDetail">
@@ -41,11 +41,26 @@
     </view>
   </view>
 
+  <view class="section skeleton-section" wx:if="{{loading && !products.length}}">
+    <view class="section-head">
+      <view class="line"></view>
+      <text>加载中</text>
+      <view class="line"></view>
+    </view>
+    <view class="product-grid">
+      <view class="product-card skeleton-card" wx:for="{{skeletonItems}}" wx:key="*this">
+        <view class="skeleton skeleton-img"></view>
+        <view class="skeleton skeleton-line"></view>
+        <view class="skeleton skeleton-line short"></view>
+      </view>
+    </view>
+  </view>
+
   <view class="empty" wx:if="{{!loading && !products.length}}">
     <image src="/assets/ui/empty-box.png" mode="aspectFit" />
     <view>暂无商品</view>
   </view>
-  <view class="loading" wx:if="{{loading}}">加载中...</view>
+  <view class="loading" wx:if="{{loading && products.length}}">加载中...</view>
 
   <view class="modal-mask" wx:if="{{showNotice}}" bindtap="closeNotice">
     <view class="notice-card" catchtap="noop">

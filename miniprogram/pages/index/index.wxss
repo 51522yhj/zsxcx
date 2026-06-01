@@ -117,6 +117,40 @@
   min-width: 0;
 }
 
+.skeleton-section {
+  pointer-events: none;
+}
+
+.skeleton-card {
+  min-height: 304rpx;
+  overflow: hidden;
+  border-radius: 10rpx;
+  background: #ffffff;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #eeeeee 0%, #f8f8f8 45%, #eeeeee 90%);
+  background-size: 240% 100%;
+  animation: imageLoading 1.2s ease-in-out infinite;
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 194rpx;
+}
+
+.skeleton-line {
+  width: 76%;
+  height: 24rpx;
+  margin: 20rpx 14rpx 0;
+  border-radius: 12rpx;
+}
+
+.skeleton-line.short {
+  width: 48%;
+  margin-top: 16rpx;
+}
+
 .section-head {
   height: 96rpx;
   display: flex;
