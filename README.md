@@ -1,10 +1,10 @@
-# 小于印染服装展示平台
+# 源创潮牌工厂店
 
 本项目包含三端：
 
 - `server/`：Spring Boot 3 + MyBatis Plus 后端。
 - `admin/`：Vue 3 + Vite + Element Plus 后台管理系统。
-- `miniprogram/`：原生微信小程序。
+- `miniprogram/`：源创潮牌工厂店原生微信小程序。
 
 ## 配置说明
 
@@ -92,9 +92,5 @@ D:\code\fzxcx\miniprogram
 
 | 预览 | 预览 |
 | --- | --- |
-| ![小程序截图 01](docs/images/miniprogram/screen-01.png) | ![小程序截图 02](docs/images/miniprogram/screen-02.png) |
-| ![小程序截图 03](docs/images/miniprogram/screen-03.png) | ![小程序截图 04](docs/images/miniprogram/screen-04.png) |
-| ![小程序截图 05](docs/images/miniprogram/screen-05.png) | ![小程序截图 06](docs/images/miniprogram/screen-06.png) |
-| ![小程序截图 07](docs/images/miniprogram/screen-07.png) | ![小程序截图 08](docs/images/miniprogram/screen-08.png) |
-| ![小程序截图 09](docs/images/miniprogram/screen-09.png) | ![小程序截图 10](docs/images/miniprogram/screen-10.png) |
-| ![小程序截图 11](docs/images/miniprogram/screen-11.png) |  |
+| ![源创潮牌工厂店截图 01](docs/images/miniprogram/screen-01.jpg) | ![源创潮牌工厂店截图 02](docs/images/miniprogram/screen-02.jpg) |
+| ![源创潮牌工厂店截图 03](docs/images/miniprogram/screen-03.jpg) |  |
