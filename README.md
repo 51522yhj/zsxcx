@@ -93,4 +93,8 @@ D:\code\fzxcx\miniprogram
 | 预览 | 预览 |
 | --- | --- |
 | ![源创潮牌工厂店截图 01](docs/images/miniprogram/screen-01.jpg) | ![源创潮牌工厂店截图 02](docs/images/miniprogram/screen-02.jpg) |
-| ![源创潮牌工厂店截图 03](docs/images/miniprogram/screen-03.jpg) |  |
+| ![源创潮牌工厂店截图 03](docs/images/miniprogram/screen-03.jpg) | ![源创潮牌工厂店截图 04](docs/images/miniprogram/screen-04.png) |
+| ![源创潮牌工厂店截图 05](docs/images/miniprogram/screen-05.png) | ![源创潮牌工厂店截图 06](docs/images/miniprogram/screen-06.png) |
+| ![源创潮牌工厂店截图 07](docs/images/miniprogram/screen-07.png) | ![源创潮牌工厂店截图 08](docs/images/miniprogram/screen-08.png) |
+| ![源创潮牌工厂店截图 09](docs/images/miniprogram/screen-09.png) | ![源创潮牌工厂店截图 10](docs/images/miniprogram/screen-10.png) |
+| ![源创潮牌工厂店截图 11](docs/images/miniprogram/screen-11.png) |  |
